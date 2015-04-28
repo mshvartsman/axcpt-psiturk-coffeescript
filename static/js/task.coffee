@@ -165,13 +165,15 @@ class Renderer
     @drawingContext.stroke() 
 
   renderDots: (stimID) ->
-    for coord in stimLocs
+    for coord in dotLocs
       @renderCircle coord[0], coord[1], 10, true
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, 800, 600)
 
 class Experiment
+
+  expState: null
 
   constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
     @createInitialState
@@ -197,6 +199,17 @@ class Experiment
                   new DotsTrial(1, 0, [70, 74], 70),
                   new DotsTrial(1, 1, [70, 74], 70)]
 
+  showInstructions: ->
+    r.renderText "We are instructions."
+    addEventListener "keydown", @handleSpacebar
+    
+
+  handleSpacebar: (event) =>
+    if event.keyCode is 32
+      removeEventListener "keydown", @handleSpacebar
+      @expState.startExperiment()
+
+
   run: ->
     config = 
       blockSize: 5
@@ -208,10 +221,13 @@ class Experiment
       targetDurMax: 10000
       
 
-    expState = new State(config)
-    expState.startExperiment() 
+    @expState = new State(config)
 
-stimLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
+    @showInstructions()
+
+    
+
+dotLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
 
 window.Experiment = Experiment
 window.Renderer = Renderer
