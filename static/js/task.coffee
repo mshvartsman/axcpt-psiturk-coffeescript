@@ -123,9 +123,9 @@ class DotsTrial extends Trial
     @myState = state # hang onto state
     r.clearScreen() 
     @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
-    r.renderText "Z"
+    r.renderCircle 400, 300, 10, true
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderText "Q"), @myState.config.iti + @myState.config.contextDur
+    setTimeout (=> r.renderCircle 400, 300, 10, false), @myState.config.iti + @myState.config.contextDur
     setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
 
 class Renderer
@@ -152,6 +152,16 @@ class Renderer
     for line in lines
       ctx.fillText(line, x, y)
       y += lineHeight
+
+  renderCircle: (x, y, radius, fill=true) ->
+    @drawingContext.beginPath
+    @drawingContext.arc(x, y, radius, 0, 2 * Math.PI, false)
+    if (fill==true)
+      @drawingContext.fillStyle = 'black';
+      @drawingContext.fill();
+    @drawingContext.lineWidth = 1;
+    @drawingContext.strokeStyle = 'black';
+    @drawingContext.stroke();
 
   # renderDots: (whichPattern) ->
 
