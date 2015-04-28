@@ -137,14 +137,14 @@ class Renderer
     @canvas.style.display = "block"
     @canvas.style.margin = "0 auto"
     @canvas.style.padding = "0"
-    @canvas.width = 800
-    @canvas.height = 600
+    @canvas.width = 1024
+    @canvas.height = 768
     @drawingContext = @canvas.getContext '2d'
     @drawingContext.font = fontParams
     @drawingContext.textAlign = "center"
 
   renderText: (text) ->
-    @fillTextMultiLine(@drawingContext, text, 400, 300)
+    @fillTextMultiLine(@drawingContext, text, @canvas.width/2, @canvas.height/2)
 
   fillTextMultiLine: (ctx, text, x, y) ->
     lineHeight = ctx.measureText("M").width * 1.4
@@ -169,7 +169,7 @@ class Renderer
       @renderCircle coord[0], coord[1], 10, true
 
   clearScreen: =>
-    @drawingContext.clearRect(0,0, 800, 600)
+    @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
 
 class Experiment
   expState: null
@@ -222,12 +222,12 @@ class DotsExperiment extends Experiment
 class LettersExperiment extends Experiment  
     
   createTrialTypes: -> 
-    stimuli = ["A","X","B","Y"]
-    stimuli.shuffle() 
-    @trialTypes = [new Trial(stimuli[0], stimuli[1], [70, 74], 70), 
-                  new Trial(stimuli[0], stimuli[2], [70, 74], 70), 
-                  new Trial(stimuli[3], stimuli[1], [70, 74], 70),
-                  new Trial(stimuli[3], stimuli[2], [70, 74], 70)]
+    @stimuli = ["A","X","B","Y"]
+    @stimuli.shuffle() 
+    @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70), 
+                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 70), 
+                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 70),
+                  new Trial(@stimuli[3], @stimuli[2], [70, 74], 70)]
 
   showInstructions: ->
     switch @instructionSlide
@@ -238,7 +238,10 @@ class LettersExperiment extends Experiment
         addEventListener "keydown", @handleSpacebar
       when 1
         r.clearScreen()
-        r.renderText "If you see one of these ltters\n \n followed by one of these letters \n \n hit the \"F\" Key"
+        r.renderText "If you see the letter #{@stimuli[0]} followed by the letter letter #{@stimuli[1]}, hit the \"F\" Key.\n
+                      Do the same if you see the letter #{@stimuli[3]} followed by the letter letter #{@stimuli[2]}.\n\n
+                      But if you see the letter #{@stimuli[0]} followed by the letter letter #{@stimuli[2]}\n
+                      or the letter #{@stimuli[3]} followed by the letter #{@stimuli[1]}, hit the \"J\" Key."
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
