@@ -123,9 +123,9 @@ class DotsTrial extends Trial
     @myState = state # hang onto state
     r.clearScreen() 
     @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
-    r.renderCircle 400, 300, 10, true
+    r.renderDots 3
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderCircle 400, 300, 10, false), @myState.config.iti + @myState.config.contextDur
+    setTimeout (=> r.renderDots 3, false), @myState.config.iti + @myState.config.contextDur
     setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
 
 class Renderer
@@ -154,16 +154,19 @@ class Renderer
       y += lineHeight
 
   renderCircle: (x, y, radius, fill=true) ->
-    @drawingContext.beginPath
+    @drawingContext.beginPath()
     @drawingContext.arc(x, y, radius, 0, 2 * Math.PI, false)
+    @drawingContext.fillStyle = 'white'
     if (fill==true)
-      @drawingContext.fillStyle = 'black';
-      @drawingContext.fill();
-    @drawingContext.lineWidth = 1;
-    @drawingContext.strokeStyle = 'black';
-    @drawingContext.stroke();
+      @drawingContext.fillStyle = 'black'
+      @drawingContext.fill()
+    @drawingContext.lineWidth = 1
+    @drawingContext.strokeStyle = 'black'
+    @drawingContext.stroke() 
 
-  # renderDots: (whichPattern) ->
+  renderDots: (stimID) ->
+    for coord in stimLocs
+      @renderCircle coord[0], coord[1], 10, true
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, 800, 600)
@@ -184,11 +187,16 @@ class Experiment
     @trialOrder.shuffle()
     
   createTrialTypes: -> 
-    @trialTypes = [new DotsTrial("A", "X", [70, 74], 70), 
-                  new DotsTrial("A", "Y", [70, 74], 70), 
-                  new DotsTrial("B", "X", [70, 74], 70),
-                  new DotsTrial("B", "Y", [70, 74], 70)]
+    # @trialTypes = [new Trial("A", "X", [70, 74], 70), 
+    #               new Trial("A", "Y", [70, 74], 70), 
+    #               new Trial("B", "X", [70, 74], 70),
+    #               new Trial("B", "Y", [70, 74], 70)]
   
+    @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
+                  new DotsTrial(0, 1, [70, 74], 70), 
+                  new DotsTrial(1, 0, [70, 74], 70),
+                  new DotsTrial(1, 1, [70, 74], 70)]
+
   run: ->
     config = 
       blockSize: 5
@@ -198,10 +206,12 @@ class Experiment
       contextDur: 500
       iti: 2000
       targetDurMax: 10000
+      
 
     expState = new State(config)
     expState.startExperiment() 
 
+stimLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
 
 window.Experiment = Experiment
 window.Renderer = Renderer
