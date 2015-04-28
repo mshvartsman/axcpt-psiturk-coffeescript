@@ -36,9 +36,10 @@ class State
     else  
       r.clearScreen()
       # otherwise do feedback and next trial
-      feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus)}!\n Please take a short break. The experiment will continue in 10 seconds."
+      feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in 10 seconds."
       r.renderText feedbackText
-      setTimeout (=> @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)), 2000
+      @blockBonus = 0
+      setTimeout (=> @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)), 10000
 
   runNextTrial : () -> 
     # increment trial global 
@@ -47,9 +48,7 @@ class State
     @trialIdBlock = @trialIdBlock + 1
     # if trial block is past blocksize, increment block and reset trialIdBlock
     if @trialIdBlock >= @config.blockSize
-
       @trialIdBlock = 0
-      @blockBonus = 0
       @blockId = @blockId + 1
       @blockFeedback() # this guy also runs the next trial if needed
     else # otherwise run next trial
@@ -79,7 +78,7 @@ class Trial
       psiTurk.recordTrialData [@trialIdGlobal, @trialIdBlock, @blockID, @context, @target, @cresp, @rt, @acc, @bonus]
       @showFeedback()
 
-  constructor:(@context, @target, @keys, @cresp, @timeoutDur=10000)-> 
+  constructor:(@context, @target, @keys, @cresp, @timeoutDur = 10000)-> 
 
   computeBonus: => 
     @bonus = if @acc is 1 then 100 else -50 
@@ -94,7 +93,7 @@ class Trial
     r.renderText @context
     setTimeout r.clearScreen, @myState.config.contextDur
     setTimeout (=> r.renderText @target), @myState.config.iti + @myState.config.contextDur
-    setTimeout @enableInput, @myState.config.iti+@myState.config.contextdur
+    setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
     
   timedOut: =>
     r.clearScreen()
@@ -115,6 +114,19 @@ class Trial
   enableInput: =>
     addEventListener "keydown", @handleButtonPress
     @timeout = setTimeout @timedOut, @timeoutDur
+
+class DotsTrial extends Trial
+  constructor: (@context, @target, @keys, @cresp, @timeoutDur=10000)->
+    super("Q", "W", @keys, @cresp, @timeoutDur=10000)
+
+  run: (state) =>
+    @myState = state # hang onto state
+    r.clearScreen() 
+    @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
+    r.renderText "Z"
+    setTimeout r.clearScreen, @myState.config.contextDur
+    setTimeout (=> r.renderText "Q"), @myState.config.iti + @myState.config.contextDur
+    setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
 
 class Renderer
   drawingContext: null
@@ -141,6 +153,8 @@ class Renderer
       ctx.fillText(line, x, y)
       y += lineHeight
 
+  # renderDots: (whichPattern) ->
+
   clearScreen: =>
     @drawingContext.clearRect(0,0, 800, 600)
 
@@ -160,10 +174,10 @@ class Experiment
     @trialOrder.shuffle()
     
   createTrialTypes: -> 
-    @trialTypes = [new Trial("A", "X", [70, 74], 70), 
-                  new Trial("A", "Y", [70, 74], 70), 
-                  new Trial("B", "X", [70, 74], 70),
-                  new Trial("B", "Y", [70, 74], 70)]
+    @trialTypes = [new DotsTrial("A", "X", [70, 74], 70), 
+                  new DotsTrial("A", "Y", [70, 74], 70), 
+                  new DotsTrial("B", "X", [70, 74], 70),
+                  new DotsTrial("B", "Y", [70, 74], 70)]
   
   run: ->
     config = 
