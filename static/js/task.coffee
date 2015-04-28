@@ -172,8 +172,8 @@ class Renderer
     @drawingContext.clearRect(0,0, 800, 600)
 
 class Experiment
-
   expState: null
+  instructionSlide: 0
 
   constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
     @createInitialState
@@ -187,31 +187,12 @@ class Experiment
     @trialOrder = [] 
     @trialOrder = @trialOrder.concat i for [1..tc] for tc, i in trialCounts
     @trialOrder.shuffle()
-    
-  createTrialTypes: -> 
-    stimuli = ["A","X","B","Y"]
-    stimuli.shuffle() 
-    @trialTypes = [new Trial(stimuli[0], stimuli[1], [70, 74], 70), 
-                  new Trial(stimuli[0], stimuli[2], [70, 74], 70), 
-                  new Trial(stimuli[3], stimuli[1], [70, 74], 70),
-                  new Trial(stimuli[3], stimuli[2], [70, 74], 70)]
-  
-    # @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
-    #               new DotsTrial(0, 1, [70, 74], 70), 
-    #               new DotsTrial(1, 0, [70, 74], 70),
-    #               new DotsTrial(1, 1, [70, 74], 70)]
-    
-
-  showInstructions: ->
-    r.renderText "We are instructions."
-    addEventListener "keydown", @handleSpacebar
-    
 
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
-      @expState.startExperiment()
-
+      @instructionSlide = @instructionSlide + 1 
+      @showInstructions()
 
   run: ->
     config = 
@@ -228,11 +209,45 @@ class Experiment
 
     @showInstructions()
 
+
+class DotsExperiment extends Experiment
+  createTrialTypes: -> 
+  
+    @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
+                  new DotsTrial(0, 1, [70, 74], 70), 
+                  new DotsTrial(1, 0, [70, 74], 70),
+                  new DotsTrial(1, 1, [70, 74], 70)]
+  
+
+class LettersExperiment extends Experiment  
+    
+  createTrialTypes: -> 
+    stimuli = ["A","X","B","Y"]
+    stimuli.shuffle() 
+    @trialTypes = [new Trial(stimuli[0], stimuli[1], [70, 74], 70), 
+                  new Trial(stimuli[0], stimuli[2], [70, 74], 70), 
+                  new Trial(stimuli[3], stimuli[1], [70, 74], 70),
+                  new Trial(stimuli[3], stimuli[2], [70, 74], 70)]
+
+  showInstructions: ->
+    switch @instructionSlide
+      when 0
+        r.renderText "Welcome to the experiment!\n
+                      I this experiment, you will make responses to pairs of stimuli.\n
+                      The pairs will be separated by a blank screen. "
+        addEventListener "keydown", @handleSpacebar
+      when 1
+        r.clearScreen()
+        r.renderText "If you see one of these ltters\n \n followed by one of these letters \n \n hit the \"F\" Key"
+        addEventListener "keydown", @handleSpacebar
+      when 2
+        r.clearScreen()
+        @expState.startExperiment()
     
 
 dotLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
 
-window.Experiment = Experiment
+window.Experiment = LettersExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
