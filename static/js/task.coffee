@@ -189,15 +189,18 @@ class Experiment
     @trialOrder.shuffle()
     
   createTrialTypes: -> 
-    # @trialTypes = [new Trial("A", "X", [70, 74], 70), 
-    #               new Trial("A", "Y", [70, 74], 70), 
-    #               new Trial("B", "X", [70, 74], 70),
-    #               new Trial("B", "Y", [70, 74], 70)]
+    stimuli = ["A","X","B","Y"]
+    stimuli.shuffle() 
+    @trialTypes = [new Trial(stimuli[0], stimuli[1], [70, 74], 70), 
+                  new Trial(stimuli[0], stimuli[2], [70, 74], 70), 
+                  new Trial(stimuli[3], stimuli[1], [70, 74], 70),
+                  new Trial(stimuli[3], stimuli[2], [70, 74], 70)]
   
-    @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
-                  new DotsTrial(0, 1, [70, 74], 70), 
-                  new DotsTrial(1, 0, [70, 74], 70),
-                  new DotsTrial(1, 1, [70, 74], 70)]
+    # @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
+    #               new DotsTrial(0, 1, [70, 74], 70), 
+    #               new DotsTrial(1, 0, [70, 74], 70),
+    #               new DotsTrial(1, 1, [70, 74], 70)]
+    
 
   showInstructions: ->
     r.renderText "We are instructions."
