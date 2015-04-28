@@ -90,11 +90,11 @@ class Trial
   run: (state) => 
     @myState = state # hang onto state
     r.clearScreen() 
-    @startTime = performance.now() + 1000
+    @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
     r.renderText @context
-    setTimeout r.clearScreen, 500
-    setTimeout (=> r.renderText @target), 2500
-    setTimeout @enableInput, 2500
+    setTimeout r.clearScreen, @myState.config.contextDur
+    setTimeout (=> r.renderText @target), @myState.config.iti + @myState.config.contextDur
+    setTimeout @enableInput, @myState.config.iti+@myState.config.contextdur
     
   timedOut: =>
     r.clearScreen()
@@ -104,7 +104,6 @@ class Trial
 
   showFeedback: =>
     r.clearScreen()
-    
     if @acc is 1 
         feedbackText = "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points! \n\n Press the spacebar to continue."
     else 
@@ -172,6 +171,9 @@ class Experiment
       nBlocks: 2
       trialTypes: @trialTypes
       trialOrder: @trialOrder
+      contextDur: 500
+      iti: 2000
+      targetDurMax: 10000
 
     expState = new State(config)
     expState.startExperiment() 
