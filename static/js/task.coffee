@@ -116,16 +116,17 @@ class Trial
     @timeout = setTimeout @timedOut, @timeoutDur
 
 class DotsTrial extends Trial
-  constructor: (@context, @target, @keys, @cresp, @timeoutDur=10000)->
+  constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
+    console.log @contextColor
     super(@context, @target, @keys, @cresp, @timeoutDur=10000)
 
   run: (state) =>
     @myState = state # hang onto state
     r.clearScreen() 
     @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
-    r.renderDots @context
+    r.renderDots @context, @contextColor
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderDots @target), @myState.config.iti + @myState.config.contextDur
+    setTimeout (=> r.renderDots @target, @targetColor), @myState.config.iti + @myState.config.contextDur
     setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
 
 class Renderer
@@ -143,30 +144,33 @@ class Renderer
     @drawingContext.font = fontParams
     @drawingContext.textAlign = "center"
 
-  renderText: (text) ->
-    @fillTextMultiLine(@drawingContext, text, @canvas.width/2, @canvas.height/2)
+  renderText: (text, color="black") ->
+    @fillTextMultiLine(@drawingContext, text, @canvas.width/2, @canvas.height/2, color)
 
-  fillTextMultiLine: (ctx, text, x, y) ->
+  fillTextMultiLine: (ctx, text, x, y, color) ->
     lineHeight = ctx.measureText("M").width * 1.4
     lines = text.split("\n")
+    ctx.fillStyle = color
     for line in lines
       ctx.fillText(line, x, y)
       y += lineHeight
 
-  renderCircle: (x, y, radius, fill=true) ->
+  renderCircle: (x, y, radius, fill=true, color="black") ->
+    @drawingContext.strokeStyle = 'color'
     @drawingContext.beginPath()
     @drawingContext.arc(x, y, radius, 0, 2 * Math.PI, false)
     @drawingContext.fillStyle = 'white'
     if (fill)
-      @drawingContext.fillStyle = 'black'
+      @drawingContext.fillStyle = color
       @drawingContext.fill()
     @drawingContext.lineWidth = 1
-    @drawingContext.strokeStyle = 'black'
+    # @drawingContext.strokeStyle = 'color'
     @drawingContext.stroke() 
 
-  renderDots: (stim, shiftX = 0, shiftY = 0) ->
+  renderDots: (stim, color="black", shiftX = 0, shiftY = 0) ->
+    console.log color
     for coord, i in dotLocs
-      @renderCircle coord[0]+shiftX, coord[1]+shiftY, 10, stim[i]
+      @renderCircle coord[0]+shiftX, coord[1]+shiftY, 10, stim[i], color
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
@@ -211,15 +215,16 @@ class Experiment
 
 
 class DotsExperiment extends Experiment
-  stimuli : [[0,0,0,0],[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
+  # exclude 0000 because it's harder to see the color there
+  stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
 
   createTrialTypes: -> 
     
     @stimuli.shuffle() # we're going to use the first 4 only
-    @trialTypes = [new DotsTrial(@stimuli[0], @stimuli[1], [70, 74], 70), 
-                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 70), 
-                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 70),
-                  new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70)]
+    @trialTypes = [new DotsTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 70, "blue", "green"), 
+                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 70, "blue", "green"),
+                  new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
     
   showInstructions: ->
     switch @instructionSlide
@@ -248,10 +253,10 @@ class LettersExperiment extends Experiment
   createTrialTypes: -> 
     @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
     @stimuli.shuffle() 
-    @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70), 
-                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 70), 
-                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 70),
-                  new Trial(@stimuli[3], @stimuli[2], [70, 74], 70)]
+    @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 70, "blue", "green"), 
+                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 70, "blue", "green"),
+                  new Trial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
   showInstructions: ->
     switch @instructionSlide
