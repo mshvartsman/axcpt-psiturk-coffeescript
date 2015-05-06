@@ -69,7 +69,7 @@ class Trial
       @myState.runNextTrial()
 
   handleButtonPress: (event) =>
-  	if event.keyCode in @keys # it's one of our legal responses
+    if event.keyCode in @keys # it's one of our legal responses
       removeEventListener "keydown", @handleButtonPress
       @rt = performance.now() - @startTime
       @acc = if event.keyCode == @cresp then 1 else 0
@@ -117,15 +117,15 @@ class Trial
 
 class DotsTrial extends Trial
   constructor: (@context, @target, @keys, @cresp, @timeoutDur=10000)->
-    super("Q", "W", @keys, @cresp, @timeoutDur=10000)
+    super(@context, @target, @keys, @cresp, @timeoutDur=10000)
 
   run: (state) =>
     @myState = state # hang onto state
     r.clearScreen() 
     @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
-    r.renderDots 3
+    r.renderDots @context
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderDots 3, false), @myState.config.iti + @myState.config.contextDur
+    setTimeout (=> r.renderDots @target), @myState.config.iti + @myState.config.contextDur
     setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
 
 class Renderer
@@ -157,16 +157,16 @@ class Renderer
     @drawingContext.beginPath()
     @drawingContext.arc(x, y, radius, 0, 2 * Math.PI, false)
     @drawingContext.fillStyle = 'white'
-    if (fill==true)
+    if (fill)
       @drawingContext.fillStyle = 'black'
       @drawingContext.fill()
     @drawingContext.lineWidth = 1
     @drawingContext.strokeStyle = 'black'
     @drawingContext.stroke() 
 
-  renderDots: (stimID) ->
-    for coord in dotLocs
-      @renderCircle coord[0], coord[1], 10, true
+  renderDots: (stim, shiftX = 0, shiftY = 0) ->
+    for coord, i in dotLocs
+      @renderCircle coord[0]+shiftX, coord[1]+shiftY, 10, stim[i]
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
@@ -211,18 +211,42 @@ class Experiment
 
 
 class DotsExperiment extends Experiment
+  stimuli : [[0,0,0,0],[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
+
   createTrialTypes: -> 
-  
-    @trialTypes = [new DotsTrial(0, 0, [70, 74], 70), 
-                  new DotsTrial(0, 1, [70, 74], 70), 
-                  new DotsTrial(1, 0, [70, 74], 70),
-                  new DotsTrial(1, 1, [70, 74], 70)]
+    
+    @stimuli.shuffle() # we're going to use the first 4 only
+    @trialTypes = [new DotsTrial(@stimuli[0], @stimuli[1], [70, 74], 70), 
+                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 70), 
+                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 70),
+                  new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70)]
+    
+  showInstructions: ->
+    switch @instructionSlide
+      when 0
+        r.renderText "Welcome to the experiment!\n
+                      I this experiment, you will make responses to pairs of stimuli.\n
+                      The pairs will be separated by a blank screen.\n\n
+                      Press the spacebar to continue."
+        addEventListener "keydown", @handleSpacebar
+      when 1
+        r.clearScreen()
+        r.renderText "If you see the symbol   followed by the symbol  , hit the \"F\" Key.\n
+                      Do the same if you see the symbol   followed by the symbol  .\n\n
+                      But if you see the symbol   followed by the symbol  \n
+                      or the symbol   followed by the symbol  , hit the \"J\" Key.\n\n
+                      Press the spacebar to continue."
+        r.renderSymbol 
+        addEventListener "keydown", @handleSpacebar
+      when 2
+        r.clearScreen()
+        @expState.startExperiment()
   
 
 class LettersExperiment extends Experiment  
     
   createTrialTypes: -> 
-    @stimuli = ["A","X","B","Y"]
+    @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
     @stimuli.shuffle() 
     @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70), 
                   new Trial(@stimuli[0], @stimuli[2], [70, 74], 70), 
@@ -234,14 +258,16 @@ class LettersExperiment extends Experiment
       when 0
         r.renderText "Welcome to the experiment!\n
                       I this experiment, you will make responses to pairs of stimuli.\n
-                      The pairs will be separated by a blank screen. "
+                      The pairs will be separated by a blank screen.\n\n
+                      Press the spacebar to continue."
         addEventListener "keydown", @handleSpacebar
       when 1
         r.clearScreen()
-        r.renderText "If you see the letter #{@stimuli[0]} followed by the letter letter #{@stimuli[1]}, hit the \"F\" Key.\n
-                      Do the same if you see the letter #{@stimuli[3]} followed by the letter letter #{@stimuli[2]}.\n\n
-                      But if you see the letter #{@stimuli[0]} followed by the letter letter #{@stimuli[2]}\n
-                      or the letter #{@stimuli[3]} followed by the letter #{@stimuli[1]}, hit the \"J\" Key."
+        r.renderText "If you see the letter #{@stimuli[0]} followed by the letter #{@stimuli[1]}, hit the \"F\" Key.\n
+                      Do the same if you see the letter #{@stimuli[3]} followed by the letter #{@stimuli[2]}.\n\n
+                      But if you see the letter #{@stimuli[0]} followed by the letter #{@stimuli[2]}\n
+                      or the letter #{@stimuli[3]} followed by the letter #{@stimuli[1]}, hit the \"J\" Key.\n\n
+                      Press the spacebar to continue."
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
@@ -250,7 +276,8 @@ class LettersExperiment extends Experiment
 
 dotLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
 
-window.Experiment = LettersExperiment
+# window.Experiment = LettersExperiment
+window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
