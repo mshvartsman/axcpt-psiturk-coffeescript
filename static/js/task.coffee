@@ -167,10 +167,12 @@ class Renderer
     # @drawingContext.strokeStyle = 'color'
     @drawingContext.stroke() 
 
-  renderDots: (stim, color="black", shiftX = 0, shiftY = 0) ->
-    console.log color
-    for coord, i in dotLocs
-      @renderCircle coord[0]+shiftX, coord[1]+shiftY, 10, stim[i], color
+  renderDots: (stim, color="black", shiftX = 0, shiftY = 0, radius=10, sep=20) ->
+    centerx = @canvas.width/2
+    centery = @canvas.height/2
+    offsets = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
+    for offset, i in offsets
+      @renderCircle centerx+offset[0]*sep+shiftX, centery+offset[1]*sep+shiftY, radius, stim[i], color
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
@@ -241,7 +243,7 @@ class DotsExperiment extends Experiment
                       But if you see the symbol   followed by the symbol  \n
                       or the symbol   followed by the symbol  , hit the \"J\" Key.\n\n
                       Press the spacebar to continue."
-        r.renderSymbol 
+        r.renderDots @stimuli[0], "red", -100, -100, 5, 5
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
@@ -279,10 +281,8 @@ class LettersExperiment extends Experiment
         @expState.startExperiment()
     
 
-dotLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
-
-window.Experiment = LettersExperiment
-# window.Experiment = DotsExperiment
+# window.Experiment = LettersExperiment
+window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
