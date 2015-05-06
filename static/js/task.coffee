@@ -144,8 +144,8 @@ class Renderer
     @drawingContext.font = fontParams
     @drawingContext.textAlign = "center"
 
-  renderText: (text, color="black") ->
-    @fillTextMultiLine(@drawingContext, text, @canvas.width/2, @canvas.height/2, color)
+  renderText: (text, color="black", shiftx=0, shifty=0) ->
+    @fillTextMultiLine(@drawingContext, text, @canvas.width/2+shiftx, @canvas.height/2+shifty, color)
 
   fillTextMultiLine: (ctx, text, x, y, color) ->
     lineHeight = ctx.measureText("M").width * 1.4
@@ -224,26 +224,35 @@ class DotsExperiment extends Experiment
     
     @stimuli.shuffle() # we're going to use the first 4 only
     @trialTypes = [new DotsTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 70, "blue", "green"), 
-                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 70, "blue", "green"),
+                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
     
   showInstructions: ->
     switch @instructionSlide
       when 0
         r.renderText "Welcome to the experiment!\n
-                      I this experiment, you will make responses to pairs of stimuli.\n
+                      In this experiment, you will make responses to pairs of stimuli.\n
                       The pairs will be separated by a blank screen.\n\n
                       Press the spacebar to continue."
         addEventListener "keydown", @handleSpacebar
       when 1
         r.clearScreen()
-        r.renderText "If you see the symbol   followed by the symbol  , hit the \"F\" Key.\n
-                      Do the same if you see the symbol   followed by the symbol  .\n\n
-                      But if you see the symbol   followed by the symbol  \n
-                      or the symbol   followed by the symbol  , hit the \"J\" Key.\n\n
+        r.renderText "If you see the symbol    followed by the symbol    , hit the \"F\" Key.\n
+                      Do the same if you see the symbol    followed by the symbol    \n\n
+                      But if you see the symbol    followed by the symbol    \n
+                      or the symbol    followed by the symbol    , hit the \"J\" Key.\n\n
                       Press the spacebar to continue."
-        r.renderDots @stimuli[0], "red", -100, -100, 5, 5
+        # contexts
+        r.renderDots @stimuli[0], "blue", -132.5, -7.5 , 4, 5
+        r.renderDots @stimuli[3], "blue", 67, 28 , 4, 5
+        r.renderDots @stimuli[0], "blue", 3, 60 , 4, 5
+        r.renderDots @stimuli[3], "blue", -178, 95 , 4, 5
+        # targets
+        r.renderDots @stimuli[1], "green", 210, -7.5 , 4, 5
+        r.renderDots @stimuli[2], "green", 400, 28 , 4, 5
+        r.renderDots @stimuli[2], "green", 340, 60 , 4, 5
+        r.renderDots @stimuli[1], "green", 165, 95 , 4, 5
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
@@ -256,33 +265,43 @@ class LettersExperiment extends Experiment
     @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
     @stimuli.shuffle() 
     @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 70, "blue", "green"), 
-                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 70, "blue", "green"),
+                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new Trial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
   showInstructions: ->
     switch @instructionSlide
       when 0
         r.renderText "Welcome to the experiment!\n
-                      I this experiment, you will make responses to pairs of stimuli.\n
+                      In this experiment, you will make responses to pairs of stimuli.\n
                       The pairs will be separated by a blank screen.\n\n
                       Press the spacebar to continue."
         addEventListener "keydown", @handleSpacebar
       when 1
         r.clearScreen()
-        r.renderText "If you see the letter #{@stimuli[0]} followed by the letter #{@stimuli[1]}, hit the \"F\" Key.\n
-                      Do the same if you see the letter #{@stimuli[3]} followed by the letter #{@stimuli[2]}.\n\n
-                      But if you see the letter #{@stimuli[0]} followed by the letter #{@stimuli[2]}\n
-                      or the letter #{@stimuli[3]} followed by the letter #{@stimuli[1]}, hit the \"J\" Key.\n\n
+        r.renderText "If you see the letter     followed by the letter    , hit the \"F\" Key.\n
+                      Do the same if you see the letter     followed by the letter    .\n\n
+                      But if you see the letter     followed by the letter    \n
+                      or the letter     followed by the letter    , hit the \"J\" Key.\n\n
                       Press the spacebar to continue."
+        console.log @stimuli
+        r.renderText @stimuli[0], "blue", -132.5, 0
+        r.renderText @stimuli[3], "blue", 63, 35
+        r.renderText @stimuli[0], "blue", 3, 105
+        r.renderText @stimuli[3], "blue", -178, 140
+        # targets
+        r.renderText @stimuli[1], "green", 188, 0
+        r.renderText @stimuli[2], "green", 380, 35
+        r.renderText @stimuli[2], "green", 330, 105
+        r.renderText @stimuli[1], "green", 142, 140
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
         @expState.startExperiment()
     
 
-# window.Experiment = LettersExperiment
-window.Experiment = DotsExperiment
+window.Experiment = LettersExperiment
+# window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
