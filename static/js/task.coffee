@@ -246,13 +246,13 @@ class DotsExperiment extends Experiment
         # contexts
         r.renderDots @stimuli[0], "blue", -132.5, -7.5 , 4, 5
         r.renderDots @stimuli[3], "blue", 67, 28 , 4, 5
-        r.renderDots @stimuli[0], "blue", 3, 60 , 4, 5
-        r.renderDots @stimuli[3], "blue", -178, 95 , 4, 5
+        r.renderDots @stimuli[0], "blue", 3, 98 , 4, 5
+        r.renderDots @stimuli[3], "blue", -178, 133 , 4, 5
         # targets
         r.renderDots @stimuli[1], "green", 210, -7.5 , 4, 5
         r.renderDots @stimuli[2], "green", 400, 28 , 4, 5
-        r.renderDots @stimuli[2], "green", 340, 60 , 4, 5
-        r.renderDots @stimuli[1], "green", 165, 95 , 4, 5
+        r.renderDots @stimuli[2], "green", 340, 98 , 4, 5
+        r.renderDots @stimuli[1], "green", 165, 133 , 4, 5
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
@@ -300,8 +300,8 @@ class LettersExperiment extends Experiment
         @expState.startExperiment()
     
 
-window.Experiment = LettersExperiment
-# window.Experiment = DotsExperiment
+# window.Experiment = LettersExperiment
+window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
