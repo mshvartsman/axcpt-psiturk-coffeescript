@@ -78,7 +78,7 @@ class Trial
       psiTurk.recordTrialData [@trialIdGlobal, @trialIdBlock, @blockID, @context, @target, @cresp, @rt, @acc, @bonus]
       @showFeedback()
 
-  constructor:(@context, @target, @keys, @cresp, @timeoutDur = 10000)-> 
+  constructor:(@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)-> 
 
   computeBonus: => 
     @bonus = if @acc is 1 then 100 else -50 
@@ -90,9 +90,9 @@ class Trial
     @myState = state # hang onto state
     r.clearScreen() 
     @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
-    r.renderText @context
+    r.renderText @context, @contextColor
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderText @target), @myState.config.iti + @myState.config.contextDur
+    setTimeout (=> r.renderText @target, @targetColor), @myState.config.iti + @myState.config.contextDur
     setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
     
   timedOut: =>
@@ -118,7 +118,7 @@ class Trial
 class DotsTrial extends Trial
   constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
     console.log @contextColor
-    super(@context, @target, @keys, @cresp, @timeoutDur=10000)
+    super(@context, @target, @keys, @cresp, @contextColor, @targetColor, @timeoutDur=10000)
 
   run: (state) =>
     @myState = state # hang onto state
@@ -281,8 +281,8 @@ class LettersExperiment extends Experiment
 
 dotLocs =  [[380, 280], [380, 320], [420, 280], [420, 320]]
 
-# window.Experiment = LettersExperiment
-window.Experiment = DotsExperiment
+window.Experiment = LettersExperiment
+# window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
