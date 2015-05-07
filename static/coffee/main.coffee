@@ -3,6 +3,25 @@ class Experiment
   config: null
 
   constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
+    @config = 
+      blockSize: 5
+      nBlocks: 2
+      contextDur: 500
+      iti: 2000
+      targetDurMax: 10000
+      spacebarTimeout: 100
+      praxTrials: 10
+      testAttempts: 50
+      testStreakToPass: 10
+
+    @state = 
+      blockId : 0
+      trialIdBlock : 0
+      trialIdGlobal : 0
+      blockBonus: 0
+      globalBonus: 0
+      phase: "initialInstructions"
+
     @createInitialState
     r.createDrawingContext(@fontParams)
     @createTrialTypes() 
@@ -25,24 +44,6 @@ class Experiment
     @state = state
 
   run: ->
-    @config = 
-      blockSize: 5
-      nBlocks: 2
-      trialTypes: @trialTypes
-      trialOrder: @trialOrder
-      contextDur: 500
-      iti: 2000
-      targetDurMax: 10000
-      spacebarTimeout: 100
-      aPraxTrials: 10
-
-    @state = 
-      blockId : 0
-      trialIdBlock : 0
-      trialIdGlobal : 0
-      blockBonus: 0
-      globalBonus: 0
-      phase: "initialInstructions"
 
     @doNext() 
 
@@ -52,9 +53,8 @@ class Experiment
         @state.instructionSlide = 0
         @showInstructions()
       when "APractice"
-        if (@state.trialIdGlobal <= @config.aPraxTrials)
-          # increment trial global 
-          @state.trialIdGlobal = @state.trialIdGlobal + 1
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
+        if (@state.trialIdGlobal < @config.praxTrials)
           @praxTrialTypes[@aPrax[@state.trialIdGlobal]].run()
         else 
           @state.instructionSlide = 4
@@ -142,12 +142,22 @@ class LettersExperiment extends Experiment
                   new PracticeLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new PracticeLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
-    @aPrax = [0,0,0,0,0,1,1,1,1,1]
+
+    praxCounts = (@config.praxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
+    # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
+    @aPrax = [] 
+    @bPrax = []
+
+    @aPrax = @aPrax.concat i for [1..pc] for pc, i in praxCounts
+    @bPrax = @bPrax.concat i for [1..pc] for pc, i in praxCounts
+    
     @aPrax.shuffle()
-    @bPrax = [2,2,2,2,2,3,3,3,3,3]
     @bPrax.shuffle()
-    @postPraxTest = [0,0,0,0,1,1,2,2,3,3]
-    @postPraxTest.shuffle()
+
+    testCounts = (@config.testAttempts/4 for i in [1..4]) # uniform distr on all 4 for the test attempts
+    @testTrialOrder = []
+    @testTrialOrder = @testTrialOrder.concat i for [1..pc] for tc, i in testCounts
+    @testTrialOrder.shuffle()
 
 
   showInstructions: ->
