@@ -11,3 +11,50 @@ Array::shuffle ?= ->
     [@[i], @[j]] = [@[j], @[i]]
   this
 
+class Renderer
+  drawingContext: null
+
+  createDrawingContext: (fontParams) ->
+    @canvas = document.createElement 'canvas'
+    document.body.appendChild @canvas
+    @canvas.style.display = "block"
+    @canvas.style.margin = "0 auto"
+    @canvas.style.padding = "0"
+    @canvas.width = 1024
+    @canvas.height = 768
+    @drawingContext = @canvas.getContext '2d'
+    @drawingContext.font = fontParams
+    @drawingContext.textAlign = "center"
+
+  renderText: (text, color="black", shiftx=0, shifty=0) ->
+    @fillTextMultiLine(@drawingContext, text, @canvas.width/2+shiftx, @canvas.height/2+shifty, color)
+
+  fillTextMultiLine: (ctx, text, x, y, color) ->
+    lineHeight = ctx.measureText("M").width * 1.4
+    lines = text.split("\n")
+    ctx.fillStyle = color
+    for line in lines
+      ctx.fillText(line, x, y)
+      y += lineHeight
+
+  renderCircle: (x, y, radius, fill=true, color="black") ->
+    @drawingContext.strokeStyle = 'color'
+    @drawingContext.beginPath()
+    @drawingContext.arc(x, y, radius, 0, 2 * Math.PI, false)
+    @drawingContext.fillStyle = 'white'
+    if (fill)
+      @drawingContext.fillStyle = color
+      @drawingContext.fill()
+    @drawingContext.lineWidth = 1
+    # @drawingContext.strokeStyle = 'color'
+    @drawingContext.stroke() 
+
+  renderDots: (stim, color="black", shiftX = 0, shiftY = 0, radius=10, sep=20) ->
+    centerx = @canvas.width/2
+    centery = @canvas.height/2
+    offsets = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
+    for offset, i in offsets
+      @renderCircle centerx+offset[0]*sep+shiftX, centery+offset[1]*sep+shiftY, radius, stim[i], color
+
+  clearScreen: =>
+    @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
