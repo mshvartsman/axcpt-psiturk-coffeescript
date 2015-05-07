@@ -1,16 +1,3 @@
-# inspired by http://www.calicowebdev.com/2011/05/01/simple-coffeescript-introduction/
-class ExtMath extends Math
-  @round = (x, precision = 0) ->
-    scale = 10 ** precision
-    Math.round(x * scale) / scale
-
-# https://coffeescript-cookbook.github.io/chapters/arrays/shuffling-array-elements
-Array::shuffle ?= ->
-  if @length > 1 then for i in [@length-1..1]
-    j = Math.floor Math.random() * (i + 1)
-    [@[i], @[j]] = [@[j], @[i]]
-  this
-
 
 class State
   blockId : 0
@@ -115,9 +102,27 @@ class Trial
     addEventListener "keydown", @handleButtonPress
     @timeout = setTimeout @timedOut, @timeoutDur
 
+class PracticeLetterTrial extends Trial
+  # remove timeout
+  enableInput: => 
+    addEventListener "keydown", @handleButtonPress
+
+  showFeedback: =>
+    r.clearScreen()
+    if @acc is 1 
+        feedbackText = "Correct!\n\n Press the spacebar to continue."
+    else 
+        feedbackText = "Wrong! \n\n Press the spacebar to continue."
+    r.renderText feedbackText
+    addEventListener "keydown", @handleSpacebar
+
+  handleSpacebar: (event) =>
+    if event.keyCode is 32
+      removeEventListener "keydown", @handleSpacebar
+      @myState.runNextPracticeTrial()
+  
 class DotsTrial extends Trial
   constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
-    console.log @contextColor
     super(@context, @target, @keys, @cresp, @contextColor, @targetColor, @timeoutDur=10000)
 
   run: (state) =>
@@ -180,6 +185,7 @@ class Renderer
 class Experiment
   expState: null
   instructionSlide: 0
+  spacebarTimeout : 100
 
   constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
     @createInitialState
@@ -262,7 +268,8 @@ class DotsExperiment extends Experiment
 class LettersExperiment extends Experiment  
     
   createTrialTypes: -> 
-    @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
+    # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
+    @stimuli = ["A", "B", "C", "D", "E", "F", "G"]
     @stimuli.shuffle() 
     @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
                   new Trial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
@@ -274,28 +281,48 @@ class LettersExperiment extends Experiment
       when 0
         r.renderText "Welcome to the experiment!\n
                       In this experiment, you will make responses to pairs of stimuli.\n
-                      The pairs will be separated by a blank screen.\n\n
-                      Press the spacebar to continue."
-        addEventListener "keydown", @handleSpacebar
+                      The pairs will be separated by a blank screen.\n
+                      There will be rules mapping from the stimuli pairs to the response you make.\n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
       when 1
         r.clearScreen()
-        r.renderText "If you see the letter     followed by the letter    , hit the \"F\" Key.\n
-                      Do the same if you see the letter     followed by the letter    .\n\n
-                      But if you see the letter     followed by the letter    \n
-                      or the letter     followed by the letter    , hit the \"J\" Key.\n\n
-                      Press the spacebar to continue."
-        console.log @stimuli
-        r.renderText @stimuli[0], "blue", -132.5, 0
-        r.renderText @stimuli[3], "blue", 63, 35
-        r.renderText @stimuli[0], "blue", 3, 105
-        r.renderText @stimuli[3], "blue", -178, 140
-        # targets
-        r.renderText @stimuli[1], "green", 188, 0
-        r.renderText @stimuli[2], "green", 380, 35
-        r.renderText @stimuli[2], "green", 330, 105
-        r.renderText @stimuli[1], "green", 142, 140
-        addEventListener "keydown", @handleSpacebar
+        r.renderText "First, you will learn the rules mapping stimuli to responses.\n
+                      Then, we will test that you learned the mappings.\n
+                      If you fail, you the HIT will finish and you will earn the minimum payment.\n
+                      If you succeed, you will be able to compete for a bonus of up to $5."
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
       when 2
+        r.clearScreen()
+        r.renderText "Here is the    rule:\n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"J\" key\n\n
+                      Now you will get a chance to practice."
+        r.renderText @stimuli[0], "blue", 45, 0
+        r.renderText @stimuli[0], "blue", -180, 35
+        r.renderText @stimuli[1], "green", -100, 35
+        r.renderText @stimuli[0], "blue", -180, 75
+        r.renderText @stimuli[2], "green", -100, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+      when 3
+        @expState.runAPractice()
+      when 4
+        r.clearScreen()
+        r.renderText "Here is the second rule:\n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"J\" key\n\n
+                      Now you will get a chance to practice."
+        r.renderText @stimuli[0], "blue", -180, 35
+        r.renderText @stimuli[2], "green", -100, 35
+        r.renderText @stimuli[3], "blue", -180, 75
+        r.renderText @stimuli[1], "green", -100, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+      when 5
+        @expState.runBPractice()
+      when 4
         r.clearScreen()
         @expState.startExperiment()
     
