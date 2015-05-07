@@ -1,51 +1,6 @@
-class State
-  blockId : 0
-  trialIdBlock : 0
-  trialIdGlobal : 0
-  blockBonus: 0
-  globalBonus: 0
-
-  constructor: (@config) ->
-
-  startExperiment: () ->
-    @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)
-
-  endExperiment: ->
-    psiTurk.saveData()
-
-  blockFeedback: ->
-    if @blockId > (@config.nBlocks-1) # blocks are 0-indexed
-      # if block is past nblocks, end the experiment
-      @endExperiment()
-      r.clearScreen()
-      r.renderText "DONE!"
-    else  
-      r.clearScreen()
-      # otherwise do feedback and next trial
-      feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in 10 seconds."
-      r.renderText feedbackText
-      @blockBonus = 0
-      setTimeout (=> @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)), 10000
-
-  runNextTrial : () -> 
-    # increment trial global 
-    @trialIdGlobal = @trialIdGlobal + 1
-    # increment trial block
-    @trialIdBlock = @trialIdBlock + 1
-    # if trial block is past blocksize, increment block and reset trialIdBlock
-    if @trialIdBlock >= @config.blockSize
-      @trialIdBlock = 0
-      @blockId = @blockId + 1
-      @blockFeedback() # this guy also runs the next trial if needed
-    else # otherwise run next trial
-      @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)
-
-
-
 class Experiment
-  expState: null
-  instructionSlide: 0
-  spacebarTimeout : 100
+  state: null
+  config: null
 
   constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
     @createInitialState
@@ -63,11 +18,14 @@ class Experiment
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
-      @instructionSlide = @instructionSlide + 1 
+      @state.instructionSlide = @state.instructionSlide + 1 
       @showInstructions()
 
+  setState: (state) ->
+    @state = state
+
   run: ->
-    config = 
+    @config = 
       blockSize: 5
       nBlocks: 2
       trialTypes: @trialTypes
@@ -75,11 +33,54 @@ class Experiment
       contextDur: 500
       iti: 2000
       targetDurMax: 10000
-      
+      spacebarTimeout: 100
+      aPraxTrials: 10
 
-    @expState = new State(config)
+    @state = 
+      blockId : 0
+      trialIdBlock : 0
+      trialIdGlobal : 0
+      blockBonus: 0
+      globalBonus: 0
+      phase: "initialInstructions"
 
-    @showInstructions()
+    @doNext() 
+
+  doNext: () ->
+    switch @state.phase
+      when "initialInstructions"
+        @state.instructionSlide = 0
+        @showInstructions()
+      when "APractice"
+        if (@state.trialIdGlobal <= @config.aPraxTrials)
+          # increment trial global 
+          @state.trialIdGlobal = @state.trialIdGlobal + 1
+          @praxTrialTypes[@aPrax[@state.trialIdGlobal]].run()
+        else 
+          @state.instructionSlide = 4
+          @showInstructions()
+
+  startExperiment: () ->
+    @config.trialTypes[@config.trialOrder[@state.trialIdGlobal]].run()
+
+  endExperiment: ->
+    psiTurk.saveData()
+
+  blockFeedback: ->
+    if @state.blockId > (@config.nBlocks-1) # blocks are 0-indexed
+      # if block is past nblocks, end the experiment
+      @endExperiment()
+      r.clearScreen()
+      r.renderText "DONE!"
+    else  
+      r.clearScreen()
+      # otherwise do feedback and next trial
+      feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in 10 seconds."
+      r.renderText feedbackText
+      @state.blockBonus = 0
+      setTimeout (=> @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)), 10000
+
+  
 
 
 class DotsExperiment extends Experiment
@@ -93,7 +94,7 @@ class DotsExperiment extends Experiment
                   new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
                   new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
-    
+
   showInstructions: ->
     switch @instructionSlide
       when 0
@@ -122,7 +123,7 @@ class DotsExperiment extends Experiment
         addEventListener "keydown", @handleSpacebar
       when 2
         r.clearScreen()
-        @expState.startExperiment()
+        @state.startExperiment()
   
 
 class LettersExperiment extends Experiment  
@@ -136,23 +137,36 @@ class LettersExperiment extends Experiment
                   new Trial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new Trial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
+    @praxTrialTypes = [new PracticeLetterTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new PracticeLetterTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new PracticeLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new PracticeLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+
+    @aPrax = [0,0,0,0,0,1,1,1,1,1]
+    @aPrax.shuffle()
+    @bPrax = [2,2,2,2,2,3,3,3,3,3]
+    @bPrax.shuffle()
+    @postPraxTest = [0,0,0,0,1,1,2,2,3,3]
+    @postPraxTest.shuffle()
+
+
   showInstructions: ->
-    switch @instructionSlide
+    switch @state.instructionSlide
       when 0
         r.renderText "Welcome to the experiment!\n
                       In this experiment, you will make responses to pairs of stimuli.\n
                       The pairs will be separated by a blank screen.\n
                       There will be rules mapping from the stimuli pairs to the response you make.\n\n"
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 1
         r.clearScreen()
         r.renderText "First, you will learn the rules mapping stimuli to responses.\n
                       Then, we will test that you learned the mappings.\n
                       If you fail, you the HIT will finish and you will earn the minimum payment.\n
                       If you succeed, you will be able to compete for a bonus of up to $5."
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
         r.clearScreen()
         r.renderText "Here is the    rule:\n
@@ -164,10 +178,11 @@ class LettersExperiment extends Experiment
         r.renderText @stimuli[1], "green", -100, 35
         r.renderText @stimuli[0], "blue", -180, 75
         r.renderText @stimuli[2], "green", -100, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
-        @expState.runAPractice()
+        @state.phase = "APractice"
+        @doNext() 
       when 4
         r.clearScreen()
         r.renderText "Here is the second rule:\n
@@ -178,17 +193,18 @@ class LettersExperiment extends Experiment
         r.renderText @stimuli[2], "green", -100, 35
         r.renderText @stimuli[3], "blue", -180, 75
         r.renderText @stimuli[1], "green", -100, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
-        @expState.runBPractice()
-      when 4
+        @state.phase = "BPractice"
+        @doNext() 
+      when 6
         r.clearScreen()
-        @expState.startExperiment()
+        @state.startExperiment()
     
 
-# window.Experiment = LettersExperiment
-window.Experiment = DotsExperiment
+window.Experiment = LettersExperiment
+# window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
 r = new Renderer()
