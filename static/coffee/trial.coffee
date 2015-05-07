@@ -10,7 +10,8 @@ class Trial
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
-      @myState.runNextTrial()
+      e.state.
+      e.doNext()
 
   handleButtonPress: (event) =>
     if event.keyCode in @keys # it's one of our legal responses
@@ -27,17 +28,16 @@ class Trial
   computeBonus: => 
     @bonus = if @acc is 1 then 100 else -50 
     @bonus = @bonus - @rt * 0.1
-    @myState.blockBonus = @myState.blockBonus + @bonus
-    @myState.globalBonus = @myState.globalBonus + @bonus
+    e.state.blockBonus = e.state.blockBonus + @bonus
+    e.state.globalBonus = e.state.globalBonus + @bonus
 
   run: (state) => 
-    @myState = state # hang onto state
     r.clearScreen() 
-    @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
+    @startTime = performance.now() + e.config.iti + e.config.contextDur
     r.renderText @context, @contextColor
-    setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderText @target, @targetColor), @myState.config.iti + @myState.config.contextDur
-    setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
+    setTimeout r.clearScreen, e.config.contextDur
+    setTimeout (=> r.renderText @target, @targetColor), e.config.iti + e.config.contextDur
+    setTimeout @enableInput, e.config.iti + e.config.contextDur
     
   timedOut: =>
     r.clearScreen()
@@ -76,7 +76,7 @@ class PracticeLetterTrial extends Trial
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
-      @myState.runNextPracticeTrial()
+      e.doNext() 
   
 class DotsTrial extends Trial
   constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
