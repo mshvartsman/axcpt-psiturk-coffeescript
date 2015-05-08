@@ -40,7 +40,7 @@ class Trial
     
   timedOut: =>
     r.clearScreen()
-    r.renderText "Timed out! -300 points! Press spacebar to continue."
+    r.renderText "Timed out! Press spacebar to continue."
     psiTurk.recordTrialData {'myID': @myID, 'context': @context, 'target': @target, 'cresp': @cresp, 'rt': @rt, 'acc': @acc, 'bonus': @bonus}
     addEventListener "keydown", @handleSpacebar
 

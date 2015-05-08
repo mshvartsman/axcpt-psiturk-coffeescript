@@ -2,7 +2,7 @@ class Experiment
   state: null
   config: null
 
-  constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @nTrials=10, @fontParams = "30px sans-serif") ->
+  constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @fontParams = "30px sans-serif") ->
     @config = 
       blockSize: 5
       nBlocks: 2
@@ -10,11 +10,16 @@ class Experiment
       iti: 2000
       targetDurMax: 10000
       spacebarTimeout: 100
+      blockRestDur: 1
       nPraxTrials: 0
-      nTestAttempts: 2
-      testStreakToPass: 30
+      nTestAttempts: 10
+      testStreakToPass: 1
       minPayment: 1
       maxBonus: 5
+      correctPointsPerSec: 5
+      incorrectPointsPerSec: 5
+      deadline: 5
+      pointsPerDollar: 5
       experimenterEmail: "pni.nccl.mturk@gmail.com"
 
     @state = 
@@ -28,14 +33,14 @@ class Experiment
       currentStreak: 0
       phase: "initialInstructions"
 
-
+    @config.nTrials = @config.blockSize * @config.nBlocks
     @createInitialState
     r.createDrawingContext(@fontParams)
     @createTrialTypes() 
     @shuffleTrials() 
 
   shuffleTrials: ->
-    trialCounts = (td * @nTrials for td in @trialDist)
+    trialCounts = (td * @config.nTrials for td in @trialDist)
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
     @trialOrder = [] 
     @trialOrder = @trialOrder.concat i for [1..tc] for tc, i in trialCounts
@@ -61,7 +66,6 @@ class Experiment
         @showInstructions()
 
       when "APractice"
-        @state.trialIdGlobal = @state.trialIdGlobal + 1
         @state.aPraxId = @state.aPraxId + 1
         if (@state.aPraxId < @config.nPraxTrials)
           @praxTrialTypes[@aPrax[@state.aPraxId]].run()
@@ -70,15 +74,14 @@ class Experiment
           @showInstructions()
 
       when "BPractice"
-        @state.trialIdGlobal = @state.trialIdGlobal + 1
         @state.bPraxId = @state.bPraxId + 1
         if (@state.bPraxId < @config.nPraxTrials) 
           @praxTrialTypes[@bPrax[@state.bPraxId]].run()
         else 
           @state.instructionSlide = 6
           @showInstructions()
+
       when "test"
-        @state.trialIdGlobal = @state.trialIdGlobal + 1
         @state.testId = @state.testId + 1
         # if we've hit our streak
         if (@state.currentStreak is @config.testStreakToPass)
@@ -91,6 +94,15 @@ class Experiment
         else 
           @endTestFail()
 
+      when "experiment"
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
+        if (@state.trialIdGlobal is @config.nTrials)
+          @endExperimentSuccess
+        else if ((@state.trialIdGlobal %% @config.blockSize) is 0)
+          @blockFeedback() 
+        else 
+          @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
+
   endTestFail: -> 
     r.clearScreen()
     r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
@@ -101,24 +113,19 @@ class Experiment
     console.log "pay and record here"
 
   startExperiment: ->
-    @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
+    @state.phase = "experiment"
+    @trialTypes[@trialOrder[0]].run()
 
   endExperiment: ->
     psiTurk.saveData()
 
   blockFeedback: ->
-    if @state.blockId > (@config.nBlocks-1) # blocks are 0-indexed
-      # if block is past nblocks, end the experiment
-      @endExperiment()
-      r.clearScreen()
-      r.renderText "DONE!"
-    else  
-      r.clearScreen()
-      # otherwise do feedback and next trial
-      feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in 10 seconds."
-      r.renderText feedbackText
-      @state.blockBonus = 0
-      setTimeout (=> @config.trialTypes[@config.trialOrder[@trialIdGlobal]].run(this)), 10000
+    r.clearScreen()
+    # otherwise do feedback and next trial
+    feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
+    r.renderText feedbackText
+    @state.blockBonus = 0
+    setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
 
   
 
@@ -281,8 +288,29 @@ class LettersExperiment extends Experiment
         @state.phase = "test"
         @doNext()
       when 8
-        console.log "yay success"
-      when 15
+        r.clearScreen()
+        r.renderText "Congratulations! You have learned the rules.\n
+                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}. \n
+                      You will receive #{@config.correctPointsPerSec} points per second under #{@config.deadline}s on a correct response.\n
+                      You will receive #{@config.incorrectPointsPerSec} points per second under #{@config.deadline}s on an incorrect response.\n
+                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n
+                      As a reminder, here are the rules: \n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"J\" key\n
+                      +      -->  hit the \"J\" key", "black", 0, -200
+        r.renderText @stimuli[0], "blue", -180, 190
+        r.renderText @stimuli[2], "green", -100, 190
+        r.renderText @stimuli[0], "blue", -180, 120
+        r.renderText @stimuli[1], "green", -100, 120
+        r.renderText @stimuli[3], "blue", -180, 155
+        r.renderText @stimuli[1], "green", -100, 155
+        r.renderText @stimuli[3], "blue", -180, 80
+        r.renderText @stimuli[2], "green", -100, 80
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 230 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 9
         r.clearScreen()
         @startExperiment()
     
