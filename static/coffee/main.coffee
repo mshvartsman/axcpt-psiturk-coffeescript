@@ -15,6 +15,7 @@ class Experiment
       testStreakToPass: 30
       minPayment: 1
       maxBonus: 5
+      experimenterEmail: "pni.nccl.mturk@gmail.com"
 
     @state = 
       blockId : 0
@@ -92,12 +93,12 @@ class Experiment
 
   endTestFail: -> 
     r.clearScreen()
-    r.renderText "Unfortunately, you were unable to maintain a streak of 
-                  Do the same if you see the symbol    followed by the symbol    \n\n
-                  But if you see the symbol    followed by the symbol    \n
-                  or the symbol    followed by the symbol    , hit the \"J\" Key.\n\n
-                  Press the spacebar to continue."
-        
+    r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
+                  This means that you cannot continue with the experiment.\n
+                  You will receive $#{@config.minPayment} for your time.\n
+                  If you have any questions, email #{@config.experimenterEmail}\n
+                  You may close this window now."
+    console.log "pay and record here"
 
   startExperiment: ->
     @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
@@ -259,7 +260,7 @@ class LettersExperiment extends Experiment
                       You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
                       You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
                       for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
-                      the HIT will end and you will get the minimum payment ($#{config.minPayment}).\n\n
+                      the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
                       As a reminder, here are the rules: \n
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"F\" key\n
