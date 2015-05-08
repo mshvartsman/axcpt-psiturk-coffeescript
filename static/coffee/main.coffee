@@ -13,6 +13,8 @@ class Experiment
       nPraxTrials: 0
       nTestAttempts: 2
       testStreakToPass: 30
+      minPayment: 1
+      maxBonus: 5
 
     @state = 
       blockId : 0
@@ -89,7 +91,13 @@ class Experiment
           @endTestFail()
 
   endTestFail: -> 
-    console.log "endFail"
+    r.clearScreen()
+    r.renderText "Unfortunately, you were unable to maintain a streak of 
+                  Do the same if you see the symbol    followed by the symbol    \n\n
+                  But if you see the symbol    followed by the symbol    \n
+                  or the symbol    followed by the symbol    , hit the \"J\" Key.\n\n
+                  Press the spacebar to continue."
+        
 
   startExperiment: ->
     @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
@@ -209,8 +217,8 @@ class LettersExperiment extends Experiment
         r.clearScreen()
         r.renderText "First, you will learn the rules mapping stimuli to responses.\n
                       Then, we will test that you learned the mappings.\n
-                      If you fail, you the HIT will finish and you will earn the minimum payment.\n
-                      If you succeed, you will be able to compete for a bonus of up to $5."
+                      If you fail, you the HIT will finish and you will earn the minimum payment ($#{@config.minPayment}).\n
+                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}."
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
@@ -250,8 +258,8 @@ class LettersExperiment extends Experiment
         r.renderText "Now, we will test that you have learned the rules.\n
                       You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
                       You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
-                      for a bonus of up to $5. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
-                      the HIT will end and you will get the minimum payment.\n\n
+                      for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
+                      the HIT will end and you will get the minimum payment ($#{config.minPayment}).\n\n
                       As a reminder, here are the rules: \n
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"F\" key\n
