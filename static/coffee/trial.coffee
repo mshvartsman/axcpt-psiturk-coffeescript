@@ -10,7 +10,6 @@ class Trial
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
-      e.state.
       e.doNext()
 
   handleButtonPress: (event) =>
@@ -50,7 +49,7 @@ class Trial
     if @acc is 1 
         feedbackText = "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points! \n\n Press the spacebar to continue."
     else 
-        feedbackText = "Wrong! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points! \n\n Press the spacebar to continue."
+        feedbackText = "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points! \n\n Press the spacebar to continue."
     r.renderText feedbackText
     addEventListener "keydown", @handleSpacebar
 
@@ -69,15 +68,22 @@ class PracticeLetterTrial extends Trial
     if @acc is 1 
         feedbackText = "Correct!\n\n Press the spacebar to continue."
     else 
-        feedbackText = "Wrong! \n\n Press the spacebar to continue."
+        feedbackText = "Incorrect! \n\n Press the spacebar to continue."
     r.renderText feedbackText
     addEventListener "keydown", @handleSpacebar
 
-  handleSpacebar: (event) =>
-    if event.keyCode is 32
-      removeEventListener "keydown", @handleSpacebar
-      e.doNext() 
-  
+class TestLetterTrial extends PracticeLetterTrial
+  showFeedback: =>
+    r.clearScreen()
+    if @acc is 1 
+        e.state.currentStreak = e.state.currentStreak + 1
+        feedbackText = "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
+    else 
+        e.state.currentStreak = 0
+        feedbackText = "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left) \n\n Press the spacebar to continue."
+    r.renderText feedbackText
+    addEventListener "keydown", @handleSpacebar
+
 class DotsTrial extends Trial
   constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
     super(@context, @target, @keys, @cresp, @contextColor, @targetColor, @timeoutDur=10000)

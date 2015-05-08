@@ -10,17 +10,21 @@ class Experiment
       iti: 2000
       targetDurMax: 10000
       spacebarTimeout: 100
-      praxTrials: 10
-      testAttempts: 50
-      testStreakToPass: 10
+      nPraxTrials: 0
+      nTestAttempts: 2
+      testStreakToPass: 30
 
     @state = 
       blockId : 0
-      trialIdBlock : 0
-      trialIdGlobal : 0
+      trialIdGlobal : -1 # because we increment before we do anything
+      aPraxId: -1
+      bPraxId: -1
+      testId: -1
       blockBonus: 0
       globalBonus: 0
+      currentStreak: 0
       phase: "initialInstructions"
+
 
     @createInitialState
     r.createDrawingContext(@fontParams)
@@ -47,21 +51,48 @@ class Experiment
 
     @doNext() 
 
-  doNext: () ->
+  doNext: ->
     switch @state.phase
       when "initialInstructions"
         @state.instructionSlide = 0
         @showInstructions()
+
       when "APractice"
         @state.trialIdGlobal = @state.trialIdGlobal + 1
-        if (@state.trialIdGlobal < @config.praxTrials)
-          @praxTrialTypes[@aPrax[@state.trialIdGlobal]].run()
+        @state.aPraxId = @state.aPraxId + 1
+        if (@state.aPraxId < @config.nPraxTrials)
+          @praxTrialTypes[@aPrax[@state.aPraxId]].run()
         else 
           @state.instructionSlide = 4
           @showInstructions()
 
-  startExperiment: () ->
-    @config.trialTypes[@config.trialOrder[@state.trialIdGlobal]].run()
+      when "BPractice"
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
+        @state.bPraxId = @state.bPraxId + 1
+        if (@state.bPraxId < @config.nPraxTrials) 
+          @praxTrialTypes[@bPrax[@state.bPraxId]].run()
+        else 
+          @state.instructionSlide = 6
+          @showInstructions()
+      when "test"
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
+        @state.testId = @state.testId + 1
+        # if we've hit our streak
+        if (@state.currentStreak is @config.testStreakToPass)
+          @state.instructionSlide = 8
+          @showInstructions() 
+        # haven't hit streak but haven't run out of attempts
+        else if (@state.testId < @config.nTestAttempts) 
+          @testTrialTypes[@testTrialOrder[@state.testId]].run()
+        # ran out of attempts
+        else 
+          @endTestFail()
+
+  endTestFail: -> 
+    console.log "endFail"
+
+  startExperiment: ->
+    @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
 
   endExperiment: ->
     psiTurk.saveData()
@@ -142,19 +173,24 @@ class LettersExperiment extends Experiment
                   new PracticeLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
                   new PracticeLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
+    @testTrialTypes = [new TestLetterTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new TestLetterTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new TestLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new TestLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
-    praxCounts = (@config.praxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
+
+    praxCounts = (@config.nPraxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
+
     @aPrax = [] 
     @bPrax = []
 
     @aPrax = @aPrax.concat i for [1..pc] for pc, i in praxCounts
     @bPrax = @bPrax.concat i for [1..pc] for pc, i in praxCounts
-    
     @aPrax.shuffle()
     @bPrax.shuffle()
 
-    testCounts = (@config.testAttempts/4 for i in [1..4]) # uniform distr on all 4 for the test attempts
+    testCounts = (@config.nTestAttempts/4 for i in [1..4]) # uniform distr on all 4 for the test attempts
     @testTrialOrder = []
     @testTrialOrder = @testTrialOrder.concat i for [1..pc] for tc, i in testCounts
     @testTrialOrder.shuffle()
@@ -195,14 +231,15 @@ class LettersExperiment extends Experiment
         @doNext() 
       when 4
         r.clearScreen()
-        r.renderText "Here is the second rule:\n
+        r.renderText "Here is the    rule:\n
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"J\" key\n\n
                       Now you will get a chance to practice."
-        r.renderText @stimuli[0], "blue", -180, 35
-        r.renderText @stimuli[2], "green", -100, 35
+        r.renderText @stimuli[3], "blue", 45, 0
+        r.renderText @stimuli[3], "blue", -180, 35
+        r.renderText @stimuli[1], "green", -100, 35
         r.renderText @stimuli[3], "blue", -180, 75
-        r.renderText @stimuli[1], "green", -100, 75
+        r.renderText @stimuli[2], "green", -100, 75
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -210,7 +247,35 @@ class LettersExperiment extends Experiment
         @doNext() 
       when 6
         r.clearScreen()
-        @state.startExperiment()
+        r.renderText "Now, we will test that you have learned the rules.\n
+                      You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
+                      You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
+                      for a bonus of up to $5. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
+                      the HIT will end and you will get the minimum payment.\n\n
+                      As a reminder, here are the rules: \n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"F\" key\n
+                      +      -->  hit the \"J\" key\n
+                      +      -->  hit the \"J\" key", "black", 0, -200
+        r.renderText @stimuli[0], "blue", -180, 155
+        r.renderText @stimuli[2], "green", -100, 155
+        r.renderText @stimuli[0], "blue", -180, 80
+        r.renderText @stimuli[1], "green", -100, 80
+        r.renderText @stimuli[3], "blue", -180, 120
+        r.renderText @stimuli[1], "green", -100, 120
+        r.renderText @stimuli[3], "blue", -180, 45
+        r.renderText @stimuli[2], "green", -100, 45
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 7
+        r.clearScreen()
+        @state.phase = "test"
+        @doNext()
+      when 8
+        console.log "yay success"
+      when 15
+        r.clearScreen()
+        @startExperiment()
     
 
 window.Experiment = LettersExperiment
