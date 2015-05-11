@@ -92,6 +92,10 @@ class Experiment
         else 
           @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
 
+  endExperiment: ->
+    psiTurk.saveData() 
+    psiTurk.completeHIT()
+
   endExperimentMoney: ->
     r.clearScreen()
     r.renderText "Congratulations! You have achieved the maximum possible bonus.\n
@@ -99,8 +103,8 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
     # psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
-    psiTurk.saveData() 
-    console.log "pay and record here"
+    @endExperiment() 
+    
 
   endExperimentTrials: ->
     r.clearScreen()
@@ -111,8 +115,7 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
     # psiTurk.recordUnstructuredData('expEndReason', 'trials')
-    psiTurk.saveData() 
-    console.log "pay and record here"
+    @endExperiment() 
 
   endExperimentFail: -> 
     r.clearScreen()
@@ -122,8 +125,7 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
     psiTurk.saveData() 
-    # psiTurk.recordUnstructuredData('expEndReason', 'testFail')
-    console.log "pay and record here"
+    @endExperiment() 
 
   startExperiment: ->
     @state.phase = "experiment"
