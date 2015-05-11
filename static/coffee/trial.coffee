@@ -12,6 +12,9 @@ class Trial
       removeEventListener "keydown", @handleSpacebar
       e.doNext()
 
+  recordTrial: () =>
+    psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":e.state.blockId, "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
+
   handleButtonPress: (event) =>
     if event.keyCode in @keys # it's one of our legal responses
       removeEventListener "keydown", @handleButtonPress
@@ -19,10 +22,10 @@ class Trial
       @acc = if event.keyCode == @cresp then 1 else 0
       @computeBonus() 
       clearTimeout @timeout
-      psiTurk.recordTrialData [@trialIdGlobal, @trialIdBlock, @blockID, @context, @target, @cresp, @rt, @acc, @bonus]
+      @recordTrial() 
       @showFeedback()
 
-  constructor:(@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)-> 
+  constructor:(@context, @target, @contextItem, @targetItem, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)-> 
 
   computeBonus: => 
     @bonus = if @acc is 1 then 100 else -50 
@@ -33,15 +36,15 @@ class Trial
   run: (state) => 
     r.clearScreen() 
     @startTime = performance.now() + e.config.iti + e.config.contextDur
-    r.renderText @context, @contextColor
+    r.renderText @contextItem, @contextColor
     setTimeout r.clearScreen, e.config.contextDur
-    setTimeout (=> r.renderText @target, @targetColor), e.config.iti + e.config.contextDur
+    setTimeout (=> r.renderText @targetItem, @targetColor), e.config.iti + e.config.contextDur
     setTimeout @enableInput, e.config.iti + e.config.contextDur
     
   timedOut: =>
     r.clearScreen()
     r.renderText "Timed out! Press spacebar to continue."
-    psiTurk.recordTrialData {'myID': @myID, 'context': @context, 'target': @target, 'cresp': @cresp, 'rt': @rt, 'acc': @acc, 'bonus': @bonus}
+    @recordTrial()
     addEventListener "keydown", @handleSpacebar
 
   showFeedback: =>
@@ -63,6 +66,9 @@ class PracticeLetterTrial extends Trial
   enableInput: => 
     addEventListener "keydown", @handleButtonPress
 
+  recordTrial: () =>
+    psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":"Practice", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
+
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
@@ -73,6 +79,11 @@ class PracticeLetterTrial extends Trial
     addEventListener "keydown", @handleSpacebar
 
 class TestLetterTrial extends PracticeLetterTrial
+
+  recordTrial: () =>
+    psiTurk.recordTrialData {"trialId":e.state.testId, "blockID":"Test", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
+
+
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
