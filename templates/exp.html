@@ -46,7 +46,27 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
-			e = new Experiment();
+		  config = {
+		      blockSize: 5,
+		      nBlocks: 2,
+		      contextDur: 10,
+		      iti: 10,
+		      targetDurMax: 10000,
+		      spacebarTimeout: 100,
+		      blockRestDur: 1,
+		      nPraxTrials: 0,
+		      nTestAttempts: 10,
+		      testStreakToPass: 1,
+		      minPayment: 1,
+		      maxBonus: 5,
+		      correctPointsPerSec: 5,
+		      incorrectPointsPerSec: 5,
+		      deadline: 5,
+		      pointsPerDollar: 500,
+		      experimenterEmail: "pni.nccl.mturk@gmail.com"
+			}
+
+			e = new Experiment(config);
 			e.run(); 
 		</script>
 		<noscript>

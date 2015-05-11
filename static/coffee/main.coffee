@@ -2,26 +2,7 @@ class Experiment
   state: null
   config: null
 
-  constructor: (@trialDist = [0.5, 0.2, 0.2, 0.1], @fontParams = "30px sans-serif") ->
-    @config = 
-      blockSize: 5
-      nBlocks: 2
-      contextDur: 10
-      iti: 10
-      targetDurMax: 10000
-      spacebarTimeout: 100
-      blockRestDur: 1
-      nPraxTrials: 0
-      nTestAttempts: 10
-      testStreakToPass: 1
-      minPayment: 1
-      maxBonus: 5
-      correctPointsPerSec: 5
-      incorrectPointsPerSec: 5
-      deadline: 5
-      pointsPerDollar: 500
-      experimenterEmail: "pni.nccl.mturk@gmail.com"
-
+  constructor: (@config, @trialDist = [0.5, 0.2, 0.2, 0.1], @fontParams = "30px sans-serif") ->
     @state = 
       blockId : 0
       trialIdGlobal : 0 
@@ -34,6 +15,7 @@ class Experiment
       phase: "initialInstructions"
 
     @config.nTrials = @config.blockSize * @config.nBlocks
+    @config.payoffId = 
     @createInitialState
     r.createDrawingContext(@fontParams)
     @createTrialTypes() 
