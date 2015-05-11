@@ -111,6 +111,7 @@ class Experiment
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
+    psiturk.recordUnstructuredData('expEndReason', 'maxMoney')
     psiTurk.saveData() 
     console.log "pay and record here"
 
@@ -122,6 +123,7 @@ class Experiment
                   you will be paid $#{cashBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
+    psiturk.recordUnstructuredData('expEndReason', 'trials')
     psiTurk.saveData() 
     console.log "pay and record here"
 
@@ -133,6 +135,7 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
     psiTurk.saveData() 
+    psiturk.recordUnstructuredData('expEndReason', 'testFail')
     console.log "pay and record here"
 
   startExperiment: ->
