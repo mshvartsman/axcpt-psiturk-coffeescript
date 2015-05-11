@@ -50,7 +50,7 @@ class Experiment
       when "APractice"
         @state.aPraxId = @state.aPraxId + 1
         @state.trialIdGlobal = @state.trialIdGlobal + 1
-        if (@state.aPraxId <= @config.nPraxTrials)
+        if (@state.aPraxId < @config.nPraxTrials)
           @praxTrialTypes[@aPrax[@state.aPraxId]].run()
         else 
           @state.instructionSlide = 4
@@ -212,15 +212,17 @@ class LettersExperiment extends Experiment
 
     @aPrax = [] 
     @bPrax = []
-
+    
     @aPrax = @aPrax.concat i for [1..pc] for pc, i in praxCounts
-    @bPrax = @bPrax.concat i for [1..pc] for pc, i in praxCounts
+
+    @bPrax = @bPrax.concat i+2 for [1..pc] for pc, i in praxCounts # i+2 because B trials are trialtypes 2,3
+
     @aPrax.shuffle()
     @bPrax.shuffle()
 
     testCounts = (@config.nTestAttempts/4 for i in [1..4]) # uniform distr on all 4 for the test attempts
     @testTrialOrder = []
-    @testTrialOrder = @testTrialOrder.concat i for [1..pc] for tc, i in testCounts
+    @testTrialOrder = @testTrialOrder.concat i for [1..tc] for tc, i in testCounts
     @testTrialOrder.shuffle()
 
 
