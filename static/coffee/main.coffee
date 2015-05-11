@@ -67,6 +67,7 @@ class Experiment
 
       when "APractice"
         @state.aPraxId = @state.aPraxId + 1
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
         if (@state.aPraxId <= @config.nPraxTrials)
           @praxTrialTypes[@aPrax[@state.aPraxId]].run()
         else 
@@ -75,6 +76,7 @@ class Experiment
 
       when "BPractice"
         @state.bPraxId = @state.bPraxId + 1
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
         if (@state.bPraxId < @config.nPraxTrials) 
           @praxTrialTypes[@bPrax[@state.bPraxId]].run()
         else 
@@ -83,8 +85,10 @@ class Experiment
 
       when "test"
         @state.testId = @state.testId + 1
+        @state.trialIdGlobal = @state.trialIdGlobal + 1
         # if we've hit our streak
         if (@state.currentStreak is @config.testStreakToPass)
+          psiTurk.recordUnstructuredData("trialsToLearn", @state.testId)
           @state.instructionSlide = 8
           @showInstructions() 
         # haven't hit streak but haven't run out of attempts
@@ -101,6 +105,7 @@ class Experiment
         else if ((@state.globalBonus/@config.pointsPerDollar) >= @config.maxBonus)
           @endExperimentMoney()
         else if ((@state.trialIdGlobal %% @config.blockSize) is 0) 
+          @state.blockId = @state.blockId + 1
           @blockFeedback() 
         else 
           @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
@@ -111,7 +116,7 @@ class Experiment
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
-    psiturk.recordUnstructuredData('expEndReason', 'maxMoney')
+    # psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
     psiTurk.saveData() 
     console.log "pay and record here"
 
@@ -123,7 +128,7 @@ class Experiment
                   you will be paid $#{cashBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
-    psiturk.recordUnstructuredData('expEndReason', 'trials')
+    # psiTurk.recordUnstructuredData('expEndReason', 'trials')
     psiTurk.saveData() 
     console.log "pay and record here"
 
@@ -135,11 +140,12 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
     psiTurk.saveData() 
-    psiturk.recordUnstructuredData('expEndReason', 'testFail')
+    # psiTurk.recordUnstructuredData('expEndReason', 'testFail')
     console.log "pay and record here"
 
   startExperiment: ->
     @state.phase = "experiment"
+    @state.trialIdGlobal = 0 # reset so that trial IDs start at 0 uniformly
     @trialTypes[@trialOrder[0]].run()
 
   blockFeedback: ->
@@ -201,20 +207,20 @@ class LettersExperiment extends Experiment
     # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
     @stimuli = ["A", "B", "C", "D", "E", "F", "G"]
     @stimuli.shuffle() 
-    @trialTypes = [new Trial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new Trial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new Trial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new Trial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @trialTypes = [new Trial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new Trial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new Trial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new Trial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
-    @praxTrialTypes = [new PracticeLetterTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new PracticeLetterTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new PracticeLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new PracticeLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @praxTrialTypes = [new PracticeLetterTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new PracticeLetterTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new PracticeLetterTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new PracticeLetterTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
-    @testTrialTypes = [new TestLetterTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new TestLetterTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new TestLetterTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new TestLetterTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @testTrialTypes = [new TestLetterTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new TestLetterTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new TestLetterTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new TestLetterTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
 
     praxCounts = (@config.nPraxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
@@ -331,7 +337,7 @@ class LettersExperiment extends Experiment
         r.renderText @stimuli[1], "green", -100, 155
         r.renderText @stimuli[3], "blue", -180, 80
         r.renderText @stimuli[2], "green", -100, 80
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 230 ), @config.spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 250 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
         r.clearScreen()
