@@ -136,9 +136,6 @@ class Experiment
     @state.phase = "experiment"
     @trialTypes[@trialOrder[0]].run()
 
-  endExperiment: ->
-    psiTurk.saveData()
-
   blockFeedback: ->
     r.clearScreen()
     # otherwise do feedback and next trial
