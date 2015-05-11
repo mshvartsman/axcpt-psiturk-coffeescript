@@ -313,6 +313,7 @@ class LettersExperiment extends Experiment
                       You will receive #{@config.correctPointsPerSec} points per second under #{@config.deadline}s on a correct response.\n
                       You will receive #{@config.incorrectPointsPerSec} points per second under #{@config.deadline}s on an incorrect response.\n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      Even if your point total is negative, you cannot earn less than the $#{@config.minPayment} minimum payment\n
                       The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n
                       As a reminder, here are the rules: \n
                       +      -->  hit the \"F\" key\n
