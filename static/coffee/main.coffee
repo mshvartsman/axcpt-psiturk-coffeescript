@@ -6,8 +6,8 @@ class Experiment
     @config = 
       blockSize: 5
       nBlocks: 2
-      contextDur: 500
-      iti: 2000
+      contextDur: 10
+      iti: 10
       targetDurMax: 10000
       spacebarTimeout: 100
       blockRestDur: 1
@@ -19,15 +19,15 @@ class Experiment
       correctPointsPerSec: 5
       incorrectPointsPerSec: 5
       deadline: 5
-      pointsPerDollar: 5
+      pointsPerDollar: 500
       experimenterEmail: "pni.nccl.mturk@gmail.com"
 
     @state = 
       blockId : 0
-      trialIdGlobal : -1 # because we increment before we do anything
-      aPraxId: -1
-      bPraxId: -1
-      testId: -1
+      trialIdGlobal : 0 
+      aPraxId: 0
+      bPraxId: 0
+      testId: 0
       blockBonus: 0
       globalBonus: 0
       currentStreak: 0
@@ -67,7 +67,7 @@ class Experiment
 
       when "APractice"
         @state.aPraxId = @state.aPraxId + 1
-        if (@state.aPraxId < @config.nPraxTrials)
+        if (@state.aPraxId <= @config.nPraxTrials)
           @praxTrialTypes[@aPrax[@state.aPraxId]].run()
         else 
           @state.instructionSlide = 4
@@ -92,18 +92,38 @@ class Experiment
           @testTrialTypes[@testTrialOrder[@state.testId]].run()
         # ran out of attempts
         else 
-          @endTestFail()
+          @endExperimentFail()
 
       when "experiment"
         @state.trialIdGlobal = @state.trialIdGlobal + 1
         if (@state.trialIdGlobal is @config.nTrials)
-          @endExperimentSuccess
-        else if ((@state.trialIdGlobal %% @config.blockSize) is 0)
+          @endExperimentTrials()
+        else if ((@state.globalBonus/@config.pointsPerDollar) >= @config.maxBonus)
+          @endExperimentMoney()
+        else if ((@state.trialIdGlobal %% @config.blockSize) is 0) 
           @blockFeedback() 
         else 
           @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
 
-  endTestFail: -> 
+  endExperimentMoney: ->
+    r.clearScreen()
+    r.renderText "Congratulations! You have achieved the maximum possible bonus.\n
+                  You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
+                  If you have any questions, email #{@config.experimenterEmail}\n
+                  You may close this window now."
+    console.log "pay and record here"
+
+  endExperimentTrials: ->
+    r.clearScreen()
+    cashBonus = @state.globalBonus < 0 then 0 else Extmath.round(@state.globalBonus / @config.pointsPerDollar, 2)
+    r.renderText "Thank you! This concludes the experiment.\n
+                  Based on achieving #{ExtMath.round(@state.globalBonus,2)} points,\n
+                  you will be paid $#{cashBonus} for your time.\n
+                  If you have any questions, email #{@config.experimenterEmail}\n
+                  You may close this window now."
+    console.log "pay and record here"
+
+  endExperimentFail: -> 
     r.clearScreen()
     r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
                   This means that you cannot continue with the experiment.\n
@@ -122,7 +142,7 @@ class Experiment
   blockFeedback: ->
     r.clearScreen()
     # otherwise do feedback and next trial
-    feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
+    feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@state.blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@state.globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
     r.renderText feedbackText
     @state.blockBonus = 0
     setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
@@ -244,7 +264,7 @@ class LettersExperiment extends Experiment
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
         @state.phase = "APractice"
-        @doNext() 
+        @praxTrialTypes[@aPrax[0]].run()
       when 4
         r.clearScreen()
         r.renderText "Here is the    rule:\n
@@ -260,7 +280,7 @@ class LettersExperiment extends Experiment
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
         @state.phase = "BPractice"
-        @doNext() 
+        @praxTrialTypes[@bPrax[0]].run()
       when 6
         r.clearScreen()
         r.renderText "Now, we will test that you have learned the rules.\n
@@ -286,7 +306,7 @@ class LettersExperiment extends Experiment
       when 7
         r.clearScreen()
         @state.phase = "test"
-        @doNext()
+        @testTrialTypes[@testTrialOrder[0]].run()
       when 8
         r.clearScreen()
         r.renderText "Congratulations! You have learned the rules.\n
