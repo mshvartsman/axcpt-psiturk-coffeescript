@@ -111,6 +111,7 @@ class Experiment
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
+    psiTurk.saveData() 
     console.log "pay and record here"
 
   endExperimentTrials: ->
@@ -121,6 +122,7 @@ class Experiment
                   you will be paid $#{cashBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
+    psiTurk.saveData() 
     console.log "pay and record here"
 
   endExperimentFail: -> 
@@ -130,6 +132,7 @@ class Experiment
                   You will receive $#{@config.minPayment} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}\n
                   You may close this window now."
+    psiTurk.saveData() 
     console.log "pay and record here"
 
   startExperiment: ->
@@ -143,8 +146,7 @@ class Experiment
     r.renderText feedbackText
     @state.blockBonus = 0
     setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
-
-  
+    psiTurk.saveData() 
 
 
 class DotsExperiment extends Experiment
