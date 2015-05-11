@@ -116,7 +116,7 @@ class Experiment
 
   endExperimentTrials: ->
     r.clearScreen()
-    cashBonus = @state.globalBonus < 0 then 0 else Extmath.round(@state.globalBonus / @config.pointsPerDollar, 2)
+    cashBonus = if @state.globalBonus < 0 then 0 else ExtMath.round(@state.globalBonus / @config.pointsPerDollar, 2)
     r.renderText "Thank you! This concludes the experiment.\n
                   Based on achieving #{ExtMath.round(@state.globalBonus,2)} points,\n
                   you will be paid $#{cashBonus} for your time.\n
