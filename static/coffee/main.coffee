@@ -246,11 +246,10 @@ class LettersExperiment extends Experiment
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
         r.clearScreen()
-        r.renderText "Here is the    rule:\n
+        r.renderText "Here is the first rule:\n
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"J\" key\n\n
                       Now you will get a chance to practice."
-        r.renderText @stimuli[0], "blue", 45, 0
         r.renderText @stimuli[0], "blue", -180, 35
         r.renderText @stimuli[1], "green", -100, 35
         r.renderText @stimuli[0], "blue", -180, 75
@@ -262,11 +261,10 @@ class LettersExperiment extends Experiment
         @praxTrialTypes[@aPrax[0]].run()
       when 4
         r.clearScreen()
-        r.renderText "Here is the    rule:\n
+        r.renderText "Here is the second rule:\n
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"J\" key\n\n
                       Now you will get a chance to practice."
-        r.renderText @stimuli[3], "blue", 45, 0
         r.renderText @stimuli[3], "blue", -180, 35
         r.renderText @stimuli[2], "green", -100, 35
         r.renderText @stimuli[3], "blue", -180, 75
