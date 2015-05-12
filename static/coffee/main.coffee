@@ -129,6 +129,7 @@ class Experiment
 
   startExperiment: ->
     @state.phase = "experiment"
+    psiTurk.finishInstructions()
     @state.trialIdGlobal = 0 # reset so that trial IDs start at 0 uniformly
     @trialTypes[@trialOrder[0]].run()
 
