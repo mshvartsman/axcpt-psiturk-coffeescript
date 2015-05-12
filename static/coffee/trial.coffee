@@ -94,8 +94,22 @@ class TestLetterTrial extends PracticeLetterTrial
         feedbackText = "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
     else 
         e.state.currentStreak = 0
-        feedbackText = "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left) \n\n Press the spacebar to continue."
-    r.renderText feedbackText
+        feedbackText = "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n
+                        As a reminder, here are the rules: \n\n
+                        +      -->  hit the \"F\" key\n
+                        +      -->  hit the \"F\" key\n
+                        +      -->  hit the \"J\" key\n
+                        +      -->  hit the \"J\" key.\n\n
+                        Press the spacebar to continue."
+        r.renderText e.stimuli[0], "blue", -180, 210
+        r.renderText e.stimuli[2], "green", -100, 210
+        r.renderText e.stimuli[0], "blue", -180, 140
+        r.renderText e.stimuli[1], "green", -100, 140
+        r.renderText e.stimuli[3], "blue", -180, 175
+        r.renderText e.stimuli[1], "green", -100, 175
+        r.renderText e.stimuli[3], "blue", -180, 105
+        r.renderText e.stimuli[2], "green", -100, 105
+    r.renderText feedbackText, "black", 0
     addEventListener "keydown", @handleSpacebar
 
 class DotsTrial extends Trial
