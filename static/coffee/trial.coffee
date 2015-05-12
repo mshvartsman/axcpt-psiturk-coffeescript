@@ -46,6 +46,7 @@ class Trial
   timedOut: =>
     r.clearScreen()
     r.renderText "Timed out! Press spacebar to continue."
+    removeEventListener "keydown", @handleButtonPress
     @recordTrial()
     addEventListener "keydown", @handleSpacebar
 
