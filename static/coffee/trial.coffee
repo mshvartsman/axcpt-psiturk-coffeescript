@@ -25,11 +25,13 @@ class Trial
       @recordTrial() 
       @showFeedback()
 
-  constructor:(@context, @target, @contextItem, @targetItem, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)-> 
+  constructor:(@context, @target, @contextItem, @targetItem, @keys, @cresp, @contextColor="black", @targetColor="black")-> 
 
   computeBonus: => 
-    @bonus = if @acc is 1 then 100 else -50 
-    @bonus = @bonus - @rt * 0.1
+    if @acc is 1
+      @bonus = (e.config.deadline-(@rt/1000))*e.config.correctPointsPerSec
+    else 
+      @bonus = @rt/1000 * e.config.incorrectPointsPerSec
     e.state.blockBonus = e.state.blockBonus + @bonus
     e.state.globalBonus = e.state.globalBonus + @bonus
 
@@ -59,7 +61,7 @@ class Trial
 
   enableInput: =>
     addEventListener "keydown", @handleButtonPress
-    @timeout = setTimeout @timedOut, @timeoutDur
+    @timeout = setTimeout @timedOut, e.config.deadline*1000
 
 class PracticeLetterTrial extends Trial
   # remove timeout
@@ -96,8 +98,8 @@ class TestLetterTrial extends PracticeLetterTrial
     addEventListener "keydown", @handleSpacebar
 
 class DotsTrial extends Trial
-  constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black", @timeoutDur=10000)->
-    super(@context, @target, @keys, @cresp, @contextColor, @targetColor, @timeoutDur=10000)
+  constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black")->
+    super(@context, @target, @keys, @cresp, @contextColor, @targetColor)
 
   run: (state) =>
     @myState = state # hang onto state
