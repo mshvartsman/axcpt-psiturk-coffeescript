@@ -267,9 +267,9 @@ class LettersExperiment extends Experiment
                       Now you will get a chance to practice."
         r.renderText @stimuli[3], "blue", 45, 0
         r.renderText @stimuli[3], "blue", -180, 35
-        r.renderText @stimuli[1], "green", -100, 35
+        r.renderText @stimuli[2], "green", -100, 35
         r.renderText @stimuli[3], "blue", -180, 75
-        r.renderText @stimuli[2], "green", -100, 75
+        r.renderText @stimuli[1], "green", -100, 75
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -306,7 +306,7 @@ class LettersExperiment extends Experiment
         r.renderText "Congratulations! You have learned the rules.\n
                       You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}. \n
                       You will receive #{@config.correctPointsPerSec} points per second under #{@config.deadline}s on a correct response.\n
-                      You will receive #{@config.incorrectPointsPerSec} points per second under #{@config.deadline}s on an incorrect response.\n
+                      You will receive #{@config.incorrectPointsPerSec} points per second on an incorrect response.\n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
                       Even if your point total is negative, you cannot earn less than the $#{@config.minPayment} minimum payment\n
                       The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n
@@ -315,15 +315,15 @@ class LettersExperiment extends Experiment
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"J\" key\n
                       +      -->  hit the \"J\" key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -180, 190
-        r.renderText @stimuli[2], "green", -100, 190
-        r.renderText @stimuli[0], "blue", -180, 120
-        r.renderText @stimuli[1], "green", -100, 120
-        r.renderText @stimuli[3], "blue", -180, 155
+        r.renderText @stimuli[0], "blue", -180, 230
+        r.renderText @stimuli[2], "green", -100, 230
+        r.renderText @stimuli[0], "blue", -180, 155
         r.renderText @stimuli[1], "green", -100, 155
-        r.renderText @stimuli[3], "blue", -180, 80
-        r.renderText @stimuli[2], "green", -100, 80
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 250 ), @config.spacebarTimeout
+        r.renderText @stimuli[3], "blue", -180, 190
+        r.renderText @stimuli[1], "green", -100, 190
+        r.renderText @stimuli[3], "blue", -180, 120
+        r.renderText @stimuli[2], "green", -100, 120
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
         r.clearScreen()
