@@ -315,14 +315,14 @@ class LettersExperiment extends Experiment
                       +      -->  hit the \"F\" key\n
                       +      -->  hit the \"J\" key\n
                       +      -->  hit the \"J\" key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -180, 230
-        r.renderText @stimuli[2], "green", -100, 230
-        r.renderText @stimuli[0], "blue", -180, 155
-        r.renderText @stimuli[1], "green", -100, 155
-        r.renderText @stimuli[3], "blue", -180, 190
-        r.renderText @stimuli[1], "green", -100, 190
-        r.renderText @stimuli[3], "blue", -180, 120
-        r.renderText @stimuli[2], "green", -100, 120
+        r.renderText @stimuli[0], "blue", -180, 215
+        r.renderText @stimuli[2], "green", -100, 215
+        r.renderText @stimuli[0], "blue", -180, 150
+        r.renderText @stimuli[1], "green", -100, 150
+        r.renderText @stimuli[3], "blue", -180, 185
+        r.renderText @stimuli[1], "green", -100, 185
+        r.renderText @stimuli[3], "blue", -180, 115
+        r.renderText @stimuli[2], "green", -100, 115
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
