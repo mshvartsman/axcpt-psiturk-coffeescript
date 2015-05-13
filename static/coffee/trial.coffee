@@ -37,11 +37,11 @@ class Trial
 
   run: (state) => 
     r.clearScreen() 
-    @startTime = performance.now() + e.config.iti + e.config.contextDur
+    @startTime = performance.now() + e.config.retentionInterval + e.config.contextDur
     r.renderText @contextItem, @contextColor
     setTimeout r.clearScreen, e.config.contextDur
-    setTimeout (=> r.renderText @targetItem, @targetColor), e.config.iti + e.config.contextDur
-    setTimeout @enableInput, e.config.iti + e.config.contextDur
+    setTimeout (=> r.renderText @targetItem, @targetColor), e.config.retentionInterval + e.config.contextDur
+    setTimeout @enableInput, e.config.retentionInterval + e.config.contextDur
     
   timedOut: =>
     r.clearScreen()
@@ -53,12 +53,10 @@ class Trial
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
-        feedbackText = "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points! \n\n Press the spacebar to continue."
+        r.renderText "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points! \n\n Press the spacebar to continue."
     else 
-        feedbackText = "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points! \n\n Press the spacebar to continue."
-    r.renderText feedbackText
+        r.renderText "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points! \n\n Press the spacebar to continue."
     addEventListener "keydown", @handleSpacebar
-
 
   enableInput: =>
     addEventListener "keydown", @handleButtonPress
@@ -75,10 +73,10 @@ class PracticeLetterTrial extends Trial
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
-        feedbackText = "Correct!\n\n Press the spacebar to continue."
+      r.renderText "Correct!\n\n Press the spacebar to continue.", "green"
     else 
-        feedbackText = "Incorrect! \n\n Press the spacebar to continue."
-    r.renderText feedbackText
+      r.renderText "Incorrect! \n\n Press the spacebar to continue.", "red"
+    
     addEventListener "keydown", @handleSpacebar
 
 class TestLetterTrial extends PracticeLetterTrial
@@ -86,30 +84,28 @@ class TestLetterTrial extends PracticeLetterTrial
   recordTrial: () =>
     psiTurk.recordTrialData {"trialId":e.state.testId, "blockID":"Test", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
 
-
   showFeedback: =>
     r.clearScreen()
-    if @acc is 1 
-        e.state.currentStreak = e.state.currentStreak + 1
-        feedbackText = "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
-    else 
-        e.state.currentStreak = 0
-        feedbackText = "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n
-                        As a reminder, here are the rules: \n\n
-                        +      -->  hit the \"F\" key\n
-                        +      -->  hit the \"F\" key\n
-                        +      -->  hit the \"J\" key\n
-                        +      -->  hit the \"J\" key.\n\n
-                        Press the spacebar to continue."
-        r.renderText e.stimuli[0], "blue", -180, 210
-        r.renderText e.stimuli[2], "green", -100, 210
-        r.renderText e.stimuli[0], "blue", -180, 140
-        r.renderText e.stimuli[1], "green", -100, 140
-        r.renderText e.stimuli[3], "blue", -180, 175
-        r.renderText e.stimuli[1], "green", -100, 175
-        r.renderText e.stimuli[3], "blue", -180, 105
-        r.renderText e.stimuli[2], "green", -100, 105
-    r.renderText feedbackText, "black", 0
+    if @acc is 1
+      e.state.currentStreak = e.state.currentStreak + 1
+      r.renderText "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
+    else
+      e.state.currentStreak = 0
+      r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)."
+      r.renderText "As a reminder, here are the rules: \n\n
+                    followed by      -->  hit the \"F\" key\n
+                    followed by      -->  hit the \"F\" key\n
+                    followed by      -->  hit the \"J\" key\n
+                    followed by      -->  hit the \"J\" key.\n\n
+                    Press the spacebar to continue."
+      r.renderText e.stimuli[0], "blue", -240, 210
+      r.renderText e.stimuli[2], "green", -40, 210
+      r.renderText e.stimuli[0], "blue", -240, 140
+      r.renderText e.stimuli[1], "green", -40, 140
+      r.renderText e.stimuli[3], "blue", -240, 175
+      r.renderText e.stimuli[1], "green", -40, 175
+      r.renderText e.stimuli[3], "blue", -240, 105
+      r.renderText e.stimuli[2], "green", -40, 105
     addEventListener "keydown", @handleSpacebar
 
 class DotsTrial extends Trial
@@ -119,8 +115,8 @@ class DotsTrial extends Trial
   run: (state) =>
     @myState = state # hang onto state
     r.clearScreen() 
-    @startTime = performance.now() + @myState.config.iti + @myState.config.contextDur
+    @startTime = performance.now() + @myState.config.retentionInterval + @myState.config.contextDur
     r.renderDots @context, @contextColor
     setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderDots @target, @targetColor), @myState.config.iti + @myState.config.contextDur
-    setTimeout @enableInput, @myState.config.iti+@myState.config.contextDur
+    setTimeout (=> r.renderDots @target, @targetColor), @myState.config.retentionInterval + @myState.config.contextDur
+    setTimeout @enableInput, @myState.config.retentionInterval+@myState.config.contextDur
