@@ -25,7 +25,7 @@ class Experiment
     trialCounts = (td * @config.nTrials for td in @trialDist)
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
     @trialOrder = [] 
-    @trialOrder = @trialOrder.concat i for [1..tc] for tc, i in trialCounts
+    @trialOrder = (@trialOrder.concat i for [1..tc] for tc, i in trialCounts)
     @trialOrder.shuffle()
 
   handleSpacebar: (event) =>
@@ -42,6 +42,7 @@ class Experiment
     @doNext() 
 
   doNext: ->
+    r.clearScreen()
     switch @state.phase
       when "initialInstructions"
         @state.instructionSlide = 0
@@ -51,7 +52,7 @@ class Experiment
         @state.aPraxId = @state.aPraxId + 1
         @state.trialIdGlobal = @state.trialIdGlobal + 1
         if (@state.aPraxId < @config.nPraxTrials)
-          @praxTrialTypes[@aPrax[@state.aPraxId]].run()
+          setTimeout (=> @praxTrialTypes[@aPrax[@state.aPraxId]].run()), @config.iti
         else 
           @state.instructionSlide = 4
           @showInstructions()
@@ -60,7 +61,7 @@ class Experiment
         @state.bPraxId = @state.bPraxId + 1
         @state.trialIdGlobal = @state.trialIdGlobal + 1
         if (@state.bPraxId < @config.nPraxTrials) 
-          @praxTrialTypes[@bPrax[@state.bPraxId]].run()
+          setTimeout (=> @praxTrialTypes[@bPrax[@state.bPraxId]].run()), @config.iti
         else 
           @state.instructionSlide = 6
           @showInstructions()
@@ -75,7 +76,7 @@ class Experiment
           @showInstructions() 
         # haven't hit streak but haven't run out of attempts
         else if (@state.testId < @config.nTestAttempts) 
-          @testTrialTypes[@testTrialOrder[@state.testId]].run()
+          setTimeout (=> @testTrialTypes[@testTrialOrder[@state.testId]].run()), @config.iti
         # ran out of attempts
         else 
           @endExperimentFail()
@@ -90,7 +91,7 @@ class Experiment
           @state.blockId = @state.blockId + 1
           @blockFeedback() 
         else 
-          @trialTypes[@trialOrder[@state.trialIdGlobal]].run()
+          setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run()), @config.iti
 
   endExperiment: ->
     psiTurk.saveData() 
@@ -314,8 +315,8 @@ class LettersExperiment extends Experiment
                       followed by      -->  hit the \"F\" key\n
                       followed by      -->  hit the \"J\" key\n
                       followed by      -->  hit the \"J\" key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -240, 215
-        r.renderText @stimuli[2], "green", -40, 215
+        r.renderText @stimuli[0], "blue", -240, 220
+        r.renderText @stimuli[2], "green", -40, 220
         r.renderText @stimuli[0], "blue", -240, 150
         r.renderText @stimuli[1], "green", -40, 150
         r.renderText @stimuli[3], "blue", -240, 185
