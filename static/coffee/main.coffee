@@ -191,7 +191,7 @@ class LettersExperiment extends Experiment
     
   createTrialTypes: -> 
     # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
-    @stimuli = ["A", "B", "C", "D", "E", "F", "G"]
+    @stimuli = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     @stimuli.shuffle() 
     @trialTypes = [new Trial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
                   new Trial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
