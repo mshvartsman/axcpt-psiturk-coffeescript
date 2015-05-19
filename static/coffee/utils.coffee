@@ -14,7 +14,10 @@ Array::shuffle ?= ->
 class Renderer
   drawingContext: null
 
-  createDrawingContext: (fontParams) ->
+  constructor: (@config) ->
+
+
+  createDrawingContext: () ->
     @canvas = document.createElement 'canvas'
     document.body.appendChild @canvas
     @canvas.style.display = "block"
@@ -23,10 +26,12 @@ class Renderer
     @canvas.width = 1024
     @canvas.height = 768
     @drawingContext = @canvas.getContext '2d'
-    @drawingContext.font = fontParams
+    @drawingContext.font = "#{@config.instructionFontSize}px #{@config.fontFamily}"
+    # @drawingContext.font = "30px sans-serif"
     @drawingContext.textAlign = "center"
 
-  renderText: (text, color="black", shiftx=0, shifty=0) ->
+  renderText: (text, color="black", shiftx=0, shifty=0, fontparams...) ->
+    # @drawingContext.font = "#{@config.fontFamily} #{@config.instructionFontSize}px"
     @fillTextMultiLine(@drawingContext, text, @canvas.width/2+shiftx, @canvas.height/2+shifty, color)
 
   fillTextMultiLine: (ctx, text, x, y, color) ->

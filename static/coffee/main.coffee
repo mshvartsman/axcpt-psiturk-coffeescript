@@ -2,7 +2,7 @@ class Experiment
   state: null
   config: null
 
-  constructor: (@config, @trialDist = [0.5, 0.2, 0.2, 0.1], @fontParams = "30px sans-serif") ->
+  constructor: (@config) ->
     @state = 
       blockId : 0
       trialIdGlobal : 0 
@@ -17,12 +17,12 @@ class Experiment
     @config.nTrials = @config.blockSize * @config.nBlocks
     @config.payoffId = 
     @createInitialState
-    r.createDrawingContext(@fontParams)
+    r.createDrawingContext()
     @createTrialTypes() 
     @shuffleTrials() 
 
   shuffleTrials: ->
-    trialCounts = (td * @config.nTrials for td in @trialDist)
+    trialCounts = (td * @config.nTrials for td in @config.trialDist)
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
     @trialOrder = [] 
     @trialOrder = (@trialOrder.concat i for [1..tc] for tc, i in trialCounts)
@@ -304,13 +304,21 @@ class LettersExperiment extends Experiment
       when 8
         r.clearScreen()
         r.renderText "Congratulations! You have learned the rules.\n
-                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}. \n
-                      You will receive #{@config.correctPointsPerSec} points per second under #{@config.deadline}s on a correct response.\n
-                      You will receive #{@config.incorrectPointsPerSec} points per second on an incorrect response.\n
+                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
+                      You will get #{@config.correctBonus} points for a correct repsonse.\n
+                      You will lose #{@config.inaccPenalty} points for a wrong response.\n
+                      You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
+                      If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
+                      That is, it is better to be right than wrong, and better to be fast than slow. \n
+                      How much better is for you to figure out: try to get as many points as you can! \n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
-                      Even if your point total is negative, you cannot earn less than the $#{@config.minPayment} minimum payment\n
-                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n
-                      As a reminder, here are the rules: \n
+                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
+                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -200
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 9
+        r.clearScreen()
+        r.renderText "As a reminder, here are the rules: \n
                       followed by      -->  hit the \"F\" key\n
                       followed by      -->  hit the \"F\" key\n
                       followed by      -->  hit the \"J\" key\n
@@ -325,7 +333,7 @@ class LettersExperiment extends Experiment
         r.renderText @stimuli[2], "green", -40, 115
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 9
+      when 10
         r.clearScreen()
         @startExperiment()
     
@@ -334,4 +342,3 @@ window.Experiment = LettersExperiment
 # window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
-r = new Renderer()

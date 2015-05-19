@@ -51,23 +51,29 @@
 		      nBlocks: 10,
 		      contextDur: 500,
 		      iti: 500,
-		      retentionInterval: 2000,
-		      spacebarTimeout: 1000,
+		      retentionInterval: 20,
+		      spacebarTimeout: 100,
 		      blockRestDur: 5,
 		      nPraxTrials: 2,
 		      nTestAttempts: 50,
 		      testStreakToPass: 1,
 		      minPayment: 1,
 		      maxBonus: 5,
-		      correctPointsPerSec: 5,
-		      incorrectPointsPerSec: -15,
-		      deadline: 5,
+		      correctPoints: 100,
+		      inaccPenalty: 75,
+		      penaltyPerSecond: 25,
 		      pointsPerDollar: 1000,
+		      deadline: 5,
+		      trialDist: [0.5, 0.2, 0.2, 0.1],
+		      fontFamily: "sans-serif",
+		      instructionFontSize: 30,
+		      taskFontSize: 30,
 		      experimenterEmail: "pni.nccl.mturk@gmail.com"
 			}
-
+			r = new Renderer(config)
 			e = new Experiment(config);
 			e.run(); 
+
 		</script>
 		<noscript>
 			<h1>Warning: Javascript seems to be disabled</h1>

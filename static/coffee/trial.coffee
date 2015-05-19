@@ -28,19 +28,17 @@ class Trial
   constructor:(@context, @target, @contextItem, @targetItem, @keys, @cresp, @contextColor="black", @targetColor="black")-> 
 
   computeBonus: => 
-    if @acc is 1
-      @bonus = (e.config.deadline-(@rt/1000))*e.config.correctPointsPerSec
-    else 
-      @bonus = @rt/1000 * e.config.incorrectPointsPerSec
+    @bonus = if @acc is 1 then e.config.correctPoints else -e.config.inaccPenalty
+    @bonus = @bonus - @rt * e.config.penaltyPerSecond
     e.state.blockBonus = e.state.blockBonus + @bonus
     e.state.globalBonus = e.state.globalBonus + @bonus
 
   run: (state) => 
     r.clearScreen() 
     @startTime = performance.now() + e.config.retentionInterval + e.config.contextDur
-    r.renderText @contextItem, @contextColor
+    r.renderText @contextItem, @contextColor, e.config.taskFontSize
     setTimeout r.clearScreen, e.config.contextDur
-    setTimeout (=> r.renderText @targetItem, @targetColor), e.config.retentionInterval + e.config.contextDur
+    setTimeout (=> r.renderText @targetItem, @targetColor, e.config.taskFontSize), e.config.retentionInterval + e.config.contextDur
     setTimeout @enableInput, e.config.retentionInterval + e.config.contextDur
     
   timedOut: =>
@@ -91,8 +89,8 @@ class TestLetterTrial extends PracticeLetterTrial
       r.renderText "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
     else
       e.state.currentStreak = 0
-      r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)."
-      r.renderText "As a reminder, here are the rules: \n\n
+      r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n
+                    As a reminder, here are the rules: \n\n
                     followed by      -->  hit the \"F\" key\n
                     followed by      -->  hit the \"F\" key\n
                     followed by      -->  hit the \"J\" key\n
