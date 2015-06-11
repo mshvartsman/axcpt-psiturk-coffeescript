@@ -289,19 +289,20 @@ class LettersExperiment extends Experiment
                       followed by      -->  hit the LEFT key\n
                       followed by      -->  hit the RIGHT key\n
                       followed by      -->  hit the RIGHT key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -240, 155
-        r.renderText @stimuli[2], "green", -40, 155
-        r.renderText @stimuli[0], "blue", -240, 80
-        r.renderText @stimuli[1], "green", -40, 80
-        r.renderText @stimuli[3], "blue", -240, 120
-        r.renderText @stimuli[1], "green", -40, 120
-        r.renderText @stimuli[3], "blue", -240, 45
-        r.renderText @stimuli[2], "green", -40, 45
+        r.renderText @stimuli[0], "blue", -260, 155
+        r.renderText @stimuli[2], "green", -60, 155
+        r.renderText @stimuli[0], "blue", -260, 80
+        r.renderText @stimuli[1], "green", -60, 80
+        r.renderText @stimuli[3], "blue", -260, 120
+        r.renderText @stimuli[1], "green", -60, 120
+        r.renderText @stimuli[3], "blue", -260, 45
+        r.renderText @stimuli[2], "green", -60, 45
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 7
         r.clearScreen()
         @state.phase = "test"
+        console.log "running test"
         @testTrialTypes[@testTrialOrder[0]].run()
       when 8
         r.clearScreen()
