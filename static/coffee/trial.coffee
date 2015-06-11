@@ -65,6 +65,9 @@ class PracticeLetterTrial extends Trial
   enableInput: => 
     addEventListener "keydown", @handleButtonPress
 
+  computeBonus: => 
+    # do nothing... just override so we don't grant bonuses on prax
+
   recordTrial: () =>
     psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":"Practice", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
 
@@ -82,6 +85,9 @@ class TestLetterTrial extends PracticeLetterTrial
   recordTrial: () =>
     psiTurk.recordTrialData {"trialId":e.state.testId, "blockID":"Test", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
 
+computeBonus: => 
+    # do nothing... just override so we don't grant bonuses on test trials (only on experiment trials)
+
   showFeedback: =>
     r.clearScreen()
     if @acc is 1
@@ -91,10 +97,10 @@ class TestLetterTrial extends PracticeLetterTrial
       e.state.currentStreak = 0
       r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n
                     As a reminder, here are the rules: \n\n
-                    followed by      -->  hit the \"F\" key\n
-                    followed by      -->  hit the \"F\" key\n
-                    followed by      -->  hit the \"J\" key\n
-                    followed by      -->  hit the \"J\" key.\n\n
+                    followed by      -->  hit the LEFT key\n
+                    followed by      -->  hit the LEFT key\n
+                    followed by      -->  hit the RIGHT key\n
+                    followed by      -->  hit the RIGHT key.\n\n
                     Press the spacebar to continue."
       r.renderText e.stimuli[0], "blue", -240, 210
       r.renderText e.stimuli[2], "green", -40, 210
