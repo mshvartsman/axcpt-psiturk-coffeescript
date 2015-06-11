@@ -166,10 +166,10 @@ class DotsExperiment extends Experiment
         addEventListener "keydown", @handleSpacebar
       when 1
         r.clearScreen()
-        r.renderText "If you see the symbol    followed by the symbol    , hit the \"F\" Key.\n
+        r.renderText "If you see the symbol    followed by the symbol    , hit the LEFT Key.\n
                       Do the same if you see the symbol    followed by the symbol    \n\n
                       But if you see the symbol    followed by the symbol    \n
-                      or the symbol    followed by the symbol    , hit the \"J\" Key.\n\n
+                      or the symbol    followed by the symbol    , hit the RIGHT Key.\n\n
                       Press the spacebar to continue."
         # contexts
         r.renderDots @stimuli[0], "blue", -132.5, -7.5 , 4, 5
@@ -242,19 +242,21 @@ class LettersExperiment extends Experiment
         r.renderText "First, you will learn the rules mapping stimuli to responses.\n
                       Then, we will test that you learned the mappings.\n
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
-                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}."
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
+                      You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
+                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 300 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
         r.clearScreen()
         r.renderText "Here is the first rule:\n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"J\" key\n\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
                       Now you will get a chance to practice."
-        r.renderText @stimuli[0], "blue", -240, 35
-        r.renderText @stimuli[1], "green", -40, 35
-        r.renderText @stimuli[0], "blue", -240, 75
-        r.renderText @stimuli[2], "green", -40, 75
+        r.renderText @stimuli[0], "blue", -260, 35
+        r.renderText @stimuli[1], "green", -60, 35
+        r.renderText @stimuli[0], "blue", -260, 75
+        r.renderText @stimuli[2], "green", -60, 75
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
@@ -263,13 +265,13 @@ class LettersExperiment extends Experiment
       when 4
         r.clearScreen()
         r.renderText "Here is the second rule:\n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"J\" key\n\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
                       Now you will get a chance to practice."
-        r.renderText @stimuli[3], "blue", -240, 35
-        r.renderText @stimuli[2], "green", -40, 35
-        r.renderText @stimuli[3], "blue", -240, 75
-        r.renderText @stimuli[1], "green", -40, 75
+        r.renderText @stimuli[3], "blue", -260, 35
+        r.renderText @stimuli[2], "green", -60, 35
+        r.renderText @stimuli[3], "blue", -260, 75
+        r.renderText @stimuli[1], "green", -60, 75
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -283,10 +285,10 @@ class LettersExperiment extends Experiment
                       for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
                       the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
                       As a reminder, here are the rules: \n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"J\" key\n
-                      followed by      -->  hit the \"J\" key", "black", 0, -200
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n
+                      followed by      -->  hit the RIGHT key", "black", 0, -200
         r.renderText @stimuli[0], "blue", -240, 155
         r.renderText @stimuli[2], "green", -40, 155
         r.renderText @stimuli[0], "blue", -240, 80
@@ -319,10 +321,10 @@ class LettersExperiment extends Experiment
       when 9
         r.clearScreen()
         r.renderText "As a reminder, here are the rules: \n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"F\" key\n
-                      followed by      -->  hit the \"J\" key\n
-                      followed by      -->  hit the \"J\" key", "black", 0, -200
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n
+                      followed by      -->  hit the RIGHT key", "black", 0, -200
         r.renderText @stimuli[0], "blue", -240, 220
         r.renderText @stimuli[2], "green", -40, 220
         r.renderText @stimuli[0], "blue", -240, 150
