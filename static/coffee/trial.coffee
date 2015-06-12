@@ -112,14 +112,60 @@ class TestLetterTrial extends PracticeLetterTrial
     addEventListener "keydown", @handleSpacebar
 
 class DotsTrial extends Trial
-  constructor: (@context, @target, @keys, @cresp, @contextColor="black", @targetColor="black")->
-    super(@context, @target, @keys, @cresp, @contextColor, @targetColor)
-
-  run: (state) =>
-    @myState = state # hang onto state
+  run: (state) => 
     r.clearScreen() 
-    @startTime = performance.now() + @myState.config.retentionInterval + @myState.config.contextDur
-    r.renderDots @context, @contextColor
-    setTimeout r.clearScreen, @myState.config.contextDur
-    setTimeout (=> r.renderDots @target, @targetColor), @myState.config.retentionInterval + @myState.config.contextDur
-    setTimeout @enableInput, @myState.config.retentionInterval+@myState.config.contextDur
+    @startTime = performance.now() + e.config.retentionInterval + e.config.contextDur
+    r.renderDots @contextItem, @contextColor, e.config.taskFontSize
+    setTimeout r.clearScreen, e.config.contextDur
+    setTimeout (=> r.renderDots @targetItem, @targetColor, e.config.taskFontSize), e.config.retentionInterval + e.config.contextDur
+    setTimeout @enableInput, e.config.retentionInterval + e.config.contextDur
+
+
+class PracticeDotsTrial extends DotsTrial
+  # remove timeout
+  enableInput: => 
+    addEventListener "keydown", @handleButtonPress
+
+  computeBonus: => 
+    # do nothing... just override so we don't grant bonuses on prax
+
+  recordTrial: () =>
+    psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":"Practice", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
+
+  showFeedback: =>
+    r.clearScreen()
+    if @acc is 1 
+      r.renderText "Correct!\n\n Press the spacebar to continue.", "green"
+    else 
+      r.renderText "Incorrect! \n\n Press the spacebar to continue.", "red"
+    
+    addEventListener "keydown", @handleSpacebar
+
+class TestDotsTrial extends PracticeDotsTrial
+
+  recordTrial: () =>
+    psiTurk.recordTrialData {"trialId":e.state.testId, "blockID":"Test", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
+
+  showFeedback: =>
+    r.clearScreen()
+    if @acc is 1
+      e.state.currentStreak = e.state.currentStreak + 1
+      r.renderText "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
+    else
+      e.state.currentStreak = 0
+      r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n
+                    As a reminder, here are the rules: \n\n
+                    followed by      -->  hit the LEFT key\n
+                    followed by      -->  hit the LEFT key\n
+                    followed by      -->  hit the RIGHT key\n
+                    followed by      -->  hit the RIGHT key.\n\n
+                    Press the spacebar to continue."
+      r.renderDots e.stimuli[0], "blue", -260, 210
+      r.renderDots e.stimuli[2], "green", -60, 210
+      r.renderDots e.stimuli[0], "blue", -260, 140
+      r.renderDots e.stimuli[1], "green", -60, 140
+      r.renderDots e.stimuli[3], "blue", -260, 175
+      r.renderDots e.stimuli[1], "green", -60, 175
+      r.renderDots e.stimuli[3], "blue", -260, 105
+      r.renderDots e.stimuli[2], "green", -60, 105
+    addEventListener "keydown", @handleSpacebar
