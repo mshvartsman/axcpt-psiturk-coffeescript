@@ -87,9 +87,6 @@ class TestLetterTrial extends PracticeLetterTrial
   recordTrial: () =>
     psiTurk.recordTrialData {"trialId":e.state.testId, "blockID":"Test", "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus}
 
-  computeBonus: => 
-    # do nothing... just override so we don't grant bonuses on test trials (only on experiment trials)
-
   showFeedback: =>
     r.clearScreen()
     if @acc is 1
