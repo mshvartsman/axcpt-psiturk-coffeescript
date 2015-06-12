@@ -30,8 +30,9 @@ class Renderer
     # @drawingContext.font = "30px sans-serif"
     @drawingContext.textAlign = "center"
 
-  renderText: (text, color="black", shiftx=0, shifty=0, fontparams...) ->
-    # @drawingContext.font = "#{@config.fontFamily} #{@config.instructionFontSize}px"
+  renderText: (text, color="black", shiftx=0, shifty=0, size) ->
+    size ?= e.config.instructionFontSize
+    @drawingContext.font = "#{size}px #{@config.fontFamily} "
     @fillTextMultiLine(@drawingContext, text, @canvas.width/2+shiftx, @canvas.height/2+shifty, color)
 
   fillTextMultiLine: (ctx, text, x, y, color) ->
