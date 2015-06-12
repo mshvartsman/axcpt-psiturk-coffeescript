@@ -304,7 +304,7 @@ class DotsExperiment extends Experiment
     r.renderDots stim, colour, xoffset, yoffset, 5, 7
   
   renderStimTrial : (stim, colour="black", xoffset=0, yoffset=0)->
-    r.renderDots stim, colour, xoffset, yoffset, 10, 20
+    r.renderDots stim, colour, xoffset, yoffset, 15, 20
 
 
 # window.Experiment = LettersExperiment
