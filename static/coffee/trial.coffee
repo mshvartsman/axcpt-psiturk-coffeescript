@@ -29,7 +29,7 @@ class Trial
 
   computeBonus: => 
     @bonus = if @acc is 1 then e.config.correctPoints else -e.config.inaccPenalty
-    @bonus = @bonus - @rt * e.config.penaltyPerSecond
+    @bonus = @bonus - @rt * e.config.penaltyPerSecond / 1000 
     e.state.blockBonus = e.state.blockBonus + @bonus
     e.state.globalBonus = e.state.globalBonus + @bonus
 
@@ -102,14 +102,14 @@ class TestLetterTrial extends PracticeLetterTrial
                     followed by      -->  hit the RIGHT key\n
                     followed by      -->  hit the RIGHT key.\n\n
                     Press the spacebar to continue."
-      r.renderText e.stimuli[0], "blue", -240, 210
-      r.renderText e.stimuli[2], "green", -40, 210
-      r.renderText e.stimuli[0], "blue", -240, 140
-      r.renderText e.stimuli[1], "green", -40, 140
-      r.renderText e.stimuli[3], "blue", -240, 175
-      r.renderText e.stimuli[1], "green", -40, 175
-      r.renderText e.stimuli[3], "blue", -240, 105
-      r.renderText e.stimuli[2], "green", -40, 105
+      r.renderText e.stimuli[0], "blue", -260, 210
+      r.renderText e.stimuli[2], "green", -60, 210
+      r.renderText e.stimuli[0], "blue", -260, 140
+      r.renderText e.stimuli[1], "green", -60, 140
+      r.renderText e.stimuli[3], "blue", -260, 175
+      r.renderText e.stimuli[1], "green", -60, 175
+      r.renderText e.stimuli[3], "blue", -260, 105
+      r.renderText e.stimuli[2], "green", -60, 105
     addEventListener "keydown", @handleSpacebar
 
 class DotsTrial extends Trial
