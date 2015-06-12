@@ -237,13 +237,13 @@ class Experiment
                   followed by      -->  hit the LEFT key\n
                   followed by      -->  hit the RIGHT key\n
                   followed by      -->  hit the RIGHT key.", "black", xoffset, yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -260+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 105+yoffset
     @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -260+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 35+yoffset
     @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -260+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -280+xoffset, 70+yoffset
     @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -260+xoffset, 0+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -280+xoffset, 0+yoffset
     @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 0+yoffset
 
   createTrialTypes: -> 
@@ -286,7 +286,7 @@ class Experiment
 
 class LettersExperiment extends Experiment  
   # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
-  stimuli:["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+  stimuli: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
   renderStimInstruct : (stim, colour="black", xoffset=0, yoffset=0)->
     r.renderText stim, colour, xoffset, yoffset
@@ -298,16 +298,16 @@ class DotsExperiment extends Experiment
   # all except 0000 which make it hard to see color
   # @stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
   # all with 2 empty 2 filled
-  @stimuli = [[0,0,1,1],[0,1,0,1],[0,1,1,0],[1,0,0,1],[1,0,1,0],[1,1,0,0]]
+  stimuli: [[0,0,1,1],[0,1,0,1],[0,1,1,0],[1,0,0,1],[1,0,1,0],[1,1,0,0]]
 
   renderStimInstruct : (stim, colour="black", xoffset=0, yoffset=0)->
-    r.renderText stim, colour, xoffset, yoffset
+    r.renderDots stim, colour, xoffset, yoffset, 5, 7
   
   renderStimTrial : (stim, colour="black", xoffset=0, yoffset=0)->
-    r.renderText stim, colour, xoffset, yoffset
+    r.renderDots stim, colour, xoffset, yoffset, 10, 20
 
 
-window.Experiment = LettersExperiment
-# window.Experiment = DotsExperiment
+# window.Experiment = LettersExperiment
+window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
