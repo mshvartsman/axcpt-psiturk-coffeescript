@@ -25,7 +25,7 @@ class Experiment
     trialCounts = (td * @config.nTrials for td in @config.trialDist)
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
     @trialOrder = [] 
-    @trialOrder = (@trialOrder.concat i for [1..tc] for tc, i in trialCounts)
+    @trialOrder = @trialOrder.concat i for [1..tc] for tc, i in trialCounts
     @trialOrder.shuffle()
 
   handleSpacebar: (event) =>
@@ -144,48 +144,7 @@ class Experiment
     psiTurk.saveData() 
 
 
-class DotsExperiment extends Experiment
-  # exclude 0000 because it's harder to see the color there
-  stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
-
-  createTrialTypes: -> 
-    
-    @stimuli.shuffle() # we're going to use the first 4 only
-    @trialTypes = [new DotsTrial(@stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new DotsTrial(@stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new DotsTrial(@stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new DotsTrial(@stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
-
-  showInstructions: ->
-    switch @instructionSlide
-      when 0
-        r.renderText "Welcome to the experiment!\n
-                      In this experiment, you will make responses to pairs of stimuli.\n
-                      The two stimuli in each pair will be separated by a blank screen.\n\n
-                      Press the spacebar to continue."
-        addEventListener "keydown", @handleSpacebar
-      when 1
-        r.clearScreen()
-        r.renderText "If you see the symbol    followed by the symbol    , hit the LEFT Key.\n
-                      Do the same if you see the symbol    followed by the symbol    \n\n
-                      But if you see the symbol    followed by the symbol    \n
-                      or the symbol    followed by the symbol    , hit the RIGHT Key.\n\n
-                      Press the spacebar to continue."
-        # contexts
-        r.renderDots @stimuli[0], "blue", -132.5, -7.5 , 4, 5
-        r.renderDots @stimuli[3], "blue", 67, 28 , 4, 5
-        r.renderDots @stimuli[0], "blue", 3, 98 , 4, 5
-        r.renderDots @stimuli[3], "blue", -178, 133 , 4, 5
-        # targets
-        r.renderDots @stimuli[1], "green", 210, -7.5 , 4, 5
-        r.renderDots @stimuli[2], "green", 400, 28 , 4, 5
-        r.renderDots @stimuli[2], "green", 340, 98 , 4, 5
-        r.renderDots @stimuli[1], "green", 165, 133 , 4, 5
-        addEventListener "keydown", @handleSpacebar
-      when 2
-        r.clearScreen()
-        @state.startExperiment()
-  
+# stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
 
 class LettersExperiment extends Experiment  
     
@@ -226,7 +185,6 @@ class LettersExperiment extends Experiment
     @testTrialOrder = []
     @testTrialOrder = @testTrialOrder.concat i for [1..tc] for tc, i in testCounts
     @testTrialOrder.shuffle()
-
 
   showInstructions: ->
     switch @state.instructionSlide
@@ -302,7 +260,6 @@ class LettersExperiment extends Experiment
       when 7
         r.clearScreen()
         @state.phase = "test"
-        console.log "running test"
         @testTrialTypes[@testTrialOrder[0]].run()
       when 8
         r.clearScreen()
@@ -325,15 +282,16 @@ class LettersExperiment extends Experiment
                       followed by      -->  hit the LEFT key\n
                       followed by      -->  hit the LEFT key\n
                       followed by      -->  hit the RIGHT key\n
-                      followed by      -->  hit the RIGHT key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -240, 220
-        r.renderText @stimuli[2], "green", -40, 220
-        r.renderText @stimuli[0], "blue", -240, 150
-        r.renderText @stimuli[1], "green", -40, 150
-        r.renderText @stimuli[3], "blue", -240, 185
-        r.renderText @stimuli[1], "green", -40, 185
-        r.renderText @stimuli[3], "blue", -240, 115
-        r.renderText @stimuli[2], "green", -40, 115
+                      followed by      -->  hit the RIGHT key", "black", 0, 0
+        r.renderText @stimuli[0], "blue", -260, 40
+        r.renderText @stimuli[1], "green", -60, 40
+        r.renderText @stimuli[3], "blue", -260, 75
+        r.renderText @stimuli[2], "green", -60, 75
+        r.renderText @stimuli[0], "blue", -260, 110
+        r.renderText @stimuli[2], "green", -60, 110
+        r.renderText @stimuli[3], "blue", -260, 145
+        r.renderText @stimuli[1], "green", -60, 145
+        
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 10
