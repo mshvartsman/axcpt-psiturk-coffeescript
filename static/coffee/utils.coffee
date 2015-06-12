@@ -56,11 +56,11 @@ class Renderer
     @drawingContext.stroke() 
 
   renderDots: (stim, color="black", shiftX = 0, shiftY = 0, radius=10, sep=20) ->
-    centerx = @canvas.width/2
-    centery = @canvas.height/2
+    centerx = @canvas.width/2 + shiftX
+    centery = @canvas.height/2 + shiftY - sep # shift things up to make these appear exactly where the letters do
     offsets = [[-1, -1], [1, -1], [-1, 1], [1, 1]]
     for offset, i in offsets
-      @renderCircle centerx+offset[0]*sep+shiftX, centery+offset[1]*sep+shiftY, radius, stim[i], color
+      @renderCircle centerx+offset[0]*sep, centery+offset[1]*sep, radius, stim[i], color
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
