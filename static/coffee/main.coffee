@@ -143,8 +143,116 @@ class Experiment
     setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
     psiTurk.saveData() 
 
+  showInstructions: ->
+    switch @state.instructionSlide
+      when 0
+        r.renderText "Welcome to the experiment!\n
+                      In this experiment, you will make responses to pairs of stimuli.\n
+                      The two stimuli in each pair will be separated by a blank screen.\n
+                      There will be one correct response for each pair of stimuli.\n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 1
+        r.clearScreen()
+        r.renderText "First, you will learn the rules mapping stimuli to responses.\n
+                      Then, we will test that you learned the mappings.\n
+                      If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
+                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
+                      You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
+                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 300 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 2
+        r.clearScreen()
+        r.renderText "Here is the first rule:\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
+                      Now you will get a chance to practice."
+        @renderStimInstruct @stimuli[0], "blue", -260, 35
+        @renderStimInstruct @stimuli[1], "green", -60, 35
+        @renderStimInstruct @stimuli[0], "blue", -260, 75
+        @renderStimInstruct @stimuli[2], "green", -60, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 3
+        @state.phase = "APractice"
+        @praxTrialTypes[@aPrax[0]].run()
+      when 4
+        r.clearScreen()
+        r.renderText "Here is the second rule:\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
+                      Now you will get a chance to practice."
+        @renderStimInstruct @stimuli[3], "blue", -260, 35
+        @renderStimInstruct @stimuli[2], "green", -60, 35
+        @renderStimInstruct @stimuli[3], "blue", -260, 75
+        @renderStimInstruct @stimuli[1], "green", -60, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 5
+        @state.phase = "BPractice"
+        @praxTrialTypes[@bPrax[0]].run()
+      when 6
+        r.clearScreen()
+        r.renderText "Now, we will test that you have learned the rules.\n
+                      You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
+                      You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
+                      for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
+                      the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
+                      As a reminder, here are the rules: \n", "black", 0, -200
+        @renderRules(0, 60)
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 230 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 7
+        r.clearScreen()
+        @state.phase = "test"
+        @testTrialTypes[@testTrialOrder[0]].run()
+      when 8
+        r.clearScreen()
+        r.renderText "Congratulations! You have learned the rules.\n
+                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
+                      You will get #{@config.correctBonus} points for a correct repsonse.\n
+                      You will lose #{@config.inaccPenalty} points for a wrong response.\n
+                      You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
+                      If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
+                      That is, it is better to be right than wrong, and better to be fast than slow. \n
+                      How much better is for you to figure out: try to get as many points as you can! \n
+                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
+                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -200
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 9
+        r.clearScreen()
+        r.renderText "As a reminder, here are the rules:", "black", 0, -200
+        @renderRules(0, -150)
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 10
+        r.clearScreen()
+        @startExperiment()
 
 class LettersExperiment extends Experiment  
+
+  renderRules : (xoffset=0, yoffset=0)->
+    r.renderText "followed by      -->  hit the LEFT key\n
+                  followed by      -->  hit the LEFT key\n
+                  followed by      -->  hit the RIGHT key\n
+                  followed by      -->  hit the RIGHT key.", "black", xoffset, yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -260+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -260+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -260+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -260+xoffset, 0+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 0+yoffset
+  
+  renderStimInstruct : (stim, colour="black", xoffset=0, yoffset=0)->
+    r.renderText stim, colour, xoffset, yoffset
+  
+  renderStimTrial : (stim, colour="black", xoffset=0, yoffset=0)->
+    r.renderText stim, colour, xoffset, yoffset
     
   createTrialTypes: -> 
     # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
@@ -183,118 +291,8 @@ class LettersExperiment extends Experiment
     @testTrialOrder = []
     @testTrialOrder = @testTrialOrder.concat i for [1..tc] for tc, i in testCounts
     @testTrialOrder.shuffle()
+  
 
-  showInstructions: ->
-    switch @state.instructionSlide
-      when 0
-        r.renderText "Welcome to the experiment!\n
-                      In this experiment, you will make responses to pairs of stimuli.\n
-                      The two stimuli in each pair will be separated by a blank screen.\n
-                      There will be one correct response for each pair of stimuli.\n\n"
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 1
-        r.clearScreen()
-        r.renderText "First, you will learn the rules mapping stimuli to responses.\n
-                      Then, we will test that you learned the mappings.\n
-                      If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
-                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
-                      You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
-                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n"
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 300 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 2
-        r.clearScreen()
-        r.renderText "Here is the first rule:\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n\n
-                      Now you will get a chance to practice."
-        r.renderText @stimuli[0], "blue", -260, 35
-        r.renderText @stimuli[1], "green", -60, 35
-        r.renderText @stimuli[0], "blue", -260, 75
-        r.renderText @stimuli[2], "green", -60, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 3
-        @state.phase = "APractice"
-        @praxTrialTypes[@aPrax[0]].run()
-      when 4
-        r.clearScreen()
-        r.renderText "Here is the second rule:\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n\n
-                      Now you will get a chance to practice."
-        r.renderText @stimuli[3], "blue", -260, 35
-        r.renderText @stimuli[2], "green", -60, 35
-        r.renderText @stimuli[3], "blue", -260, 75
-        r.renderText @stimuli[1], "green", -60, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 5
-        @state.phase = "BPractice"
-        @praxTrialTypes[@bPrax[0]].run()
-      when 6
-        r.clearScreen()
-        r.renderText "Now, we will test that you have learned the rules.\n
-                      You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
-                      You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
-                      for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
-                      the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
-                      As a reminder, here are the rules: \n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n
-                      followed by      -->  hit the RIGHT key", "black", 0, -200
-        r.renderText @stimuli[0], "blue", -260, 155
-        r.renderText @stimuli[2], "green", -60, 155
-        r.renderText @stimuli[0], "blue", -260, 80
-        r.renderText @stimuli[1], "green", -60, 80
-        r.renderText @stimuli[3], "blue", -260, 120
-        r.renderText @stimuli[1], "green", -60, 120
-        r.renderText @stimuli[3], "blue", -260, 45
-        r.renderText @stimuli[2], "green", -60, 45
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 7
-        r.clearScreen()
-        @state.phase = "test"
-        @testTrialTypes[@testTrialOrder[0]].run()
-      when 8
-        r.clearScreen()
-        r.renderText "Congratulations! You have learned the rules.\n
-                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
-                      You will get #{@config.correctBonus} points for a correct repsonse.\n
-                      You will lose #{@config.inaccPenalty} points for a wrong response.\n
-                      You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
-                      If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
-                      That is, it is better to be right than wrong, and better to be fast than slow. \n
-                      How much better is for you to figure out: try to get as many points as you can! \n
-                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
-                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
-                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -200
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 9
-        r.clearScreen()
-        r.renderText "As a reminder, here are the rules: \n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n
-                      followed by      -->  hit the RIGHT key", "black", 0, 0
-        r.renderText @stimuli[0], "blue", -260, 40
-        r.renderText @stimuli[1], "green", -60, 40
-        r.renderText @stimuli[3], "blue", -260, 75
-        r.renderText @stimuli[2], "green", -60, 75
-        r.renderText @stimuli[0], "blue", -260, 110
-        r.renderText @stimuli[2], "green", -60, 110
-        r.renderText @stimuli[3], "blue", -260, 145
-        r.renderText @stimuli[1], "green", -60, 145
-        
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
-        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
-      when 10
-        r.clearScreen()
-        @startExperiment()
     
 class DotsExperiment extends Experiment  
     
@@ -394,19 +392,20 @@ class DotsExperiment extends Experiment
                       You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
                       for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
                       the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
-                      As a reminder, here are the rules: \n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n
-                      followed by      -->  hit the RIGHT key", "black", 0, -200
-        r.renderDots @stimuli[0], "blue", -260, 155
-        r.renderDots @stimuli[2], "green", -60, 155
-        r.renderDots @stimuli[0], "blue", -260, 80
-        r.renderDots @stimuli[1], "green", -60, 80
-        r.renderDots @stimuli[3], "blue", -260, 120
-        r.renderDots @stimuli[1], "green", -60, 120
-        r.renderDots @stimuli[3], "blue", -260, 45
-        r.renderDots @stimuli[2], "green", -60, 45
+                      As a reminder, here are the rules: \n"  
+        @renderRules()
+        #               followed by      -->  hit the LEFT key\n
+        #               followed by      -->  hit the LEFT key\n
+        #               followed by      -->  hit the RIGHT key\n
+        #               followed by      -->  hit the RIGHT key", "black", 0, -200
+        # r.renderDots @stimuli[0], "blue", -260, 155
+        # r.renderDots @stimuli[2], "green", -60, 155
+        # r.renderDots @stimuli[0], "blue", -260, 80
+        # r.renderDots @stimuli[1], "green", -60, 80
+        # r.renderDots @stimuli[3], "blue", -260, 120
+        # r.renderDots @stimuli[1], "green", -60, 120
+        # r.renderDots @stimuli[3], "blue", -260, 45
+        # r.renderDots @stimuli[2], "green", -60, 45
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 7
@@ -450,7 +449,7 @@ class DotsExperiment extends Experiment
         r.clearScreen()
         @startExperiment()
     
-# window.Experiment = LettersExperiment
-window.Experiment = DotsExperiment
+window.Experiment = LettersExperiment
+# window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
