@@ -144,18 +144,16 @@ class Experiment
     psiTurk.saveData() 
 
 
-# stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
-
 class LettersExperiment extends Experiment  
     
   createTrialTypes: -> 
     # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
     @stimuli = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     @stimuli.shuffle() 
-    @trialTypes = [new Trial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new Trial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new Trial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new Trial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @trialTypes = [new LetterTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new LetterTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new LetterTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new LetterTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
     @praxTrialTypes = [new PracticeLetterTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
                   new PracticeLetterTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
@@ -298,8 +296,161 @@ class LettersExperiment extends Experiment
         r.clearScreen()
         @startExperiment()
     
+class DotsExperiment extends Experiment  
+    
+  createTrialTypes: -> 
+    # all except 0000 which make it hard to see color
+    # @stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
+    # all with 2 empty 2 filled
+    @stimuli = [[0,0,1,1],[0,1,0,1],[0,1,1,0],[1,0,0,1],[1,0,1,0],[1,1,0,0]]
+    @stimuli.shuffle() 
+    @trialTypes = [new DotsTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new DotsTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new DotsTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new DotsTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
 
-window.Experiment = LettersExperiment
-# window.Experiment = DotsExperiment
+    @praxTrialTypes = [new PracticeDotsTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new PracticeDotsTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new PracticeDotsTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new PracticeDotsTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+
+    @testTrialTypes = [new TestDotsTrial("A", "X", @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
+                  new TestDotsTrial("A", "Y", @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
+                  new TestDotsTrial("B", "X", @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
+                  new TestDotsTrial("B", "Y", @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+
+
+    praxCounts = (@config.nPraxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
+    # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
+
+    @aPrax = [] 
+    @bPrax = []
+    
+    @aPrax = @aPrax.concat i for [1..pc] for pc, i in praxCounts
+
+    @bPrax = @bPrax.concat i+2 for [1..pc] for pc, i in praxCounts # i+2 because B trials are trialtypes 2,3
+
+    @aPrax.shuffle()
+    @bPrax.shuffle()
+
+    testCounts = (@config.nTestAttempts/4 for i in [1..4]) # uniform distr on all 4 for the test attempts
+    @testTrialOrder = []
+    @testTrialOrder = @testTrialOrder.concat i for [1..tc] for tc, i in testCounts
+    @testTrialOrder.shuffle()
+
+  showInstructions: ->
+    switch @state.instructionSlide
+      when 0
+        r.renderText "Welcome to the experiment!\n
+                      In this experiment, you will make responses to pairs of stimuli.\n
+                      The two stimuli in each pair will be separated by a blank screen.\n
+                      There will be one correct response for each pair of stimuli.\n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 1
+        r.clearScreen()
+        r.renderText "First, you will learn the rules mapping stimuli to responses.\n
+                      Then, we will test that you learned the mappings.\n
+                      If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
+                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
+                      You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
+                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n"
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 300 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 2
+        r.clearScreen()
+        r.renderText "Here is the first rule:\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
+                      Now you will get a chance to practice."
+        r.renderDots @stimuli[0], "blue", -260, 35
+        r.renderDots @stimuli[1], "green", -60, 35
+        r.renderDots @stimuli[0], "blue", -260, 75
+        r.renderDots @stimuli[2], "green", -60, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 3
+        @state.phase = "APractice"
+        @praxTrialTypes[@aPrax[0]].run()
+      when 4
+        r.clearScreen()
+        r.renderText "Here is the second rule:\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n\n
+                      Now you will get a chance to practice."
+        r.renderDots @stimuli[3], "blue", -260, 35
+        r.renderDots @stimuli[2], "green", -60, 35
+        r.renderDots @stimuli[3], "blue", -260, 75
+        r.renderDots @stimuli[1], "green", -60, 75
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 5
+        @state.phase = "BPractice"
+        @praxTrialTypes[@bPrax[0]].run()
+      when 6
+        r.clearScreen()
+        r.renderText "Now, we will test that you have learned the rules.\n
+                      You will see a sequence of trials. Your goal is to get #{@config.testStreakToPass} correct in a row.\n
+                      You will have #{@config.nTestAttempts} trials total. If you get #{@config.testStreakToPass} correct in a row, you can compete\n
+                      for a bonus of up to $#{@config.maxBonus}. If you get to #{@config.nTestAttempts} without getting #{@config.testStreakToPass} in a row, \n
+                      the HIT will end and you will get the minimum payment ($#{@config.minPayment}).\n\n
+                      As a reminder, here are the rules: \n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n
+                      followed by      -->  hit the RIGHT key", "black", 0, -200
+        r.renderDots @stimuli[0], "blue", -260, 155
+        r.renderDots @stimuli[2], "green", -60, 155
+        r.renderDots @stimuli[0], "blue", -260, 80
+        r.renderDots @stimuli[1], "green", -60, 80
+        r.renderDots @stimuli[3], "blue", -260, 120
+        r.renderDots @stimuli[1], "green", -60, 120
+        r.renderDots @stimuli[3], "blue", -260, 45
+        r.renderDots @stimuli[2], "green", -60, 45
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 7
+        r.clearScreen()
+        @state.phase = "test"
+        @testTrialTypes[@testTrialOrder[0]].run()
+      when 8
+        r.clearScreen()
+        r.renderText "Congratulations! You have learned the rules.\n
+                      You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
+                      You will get #{@config.correctBonus} points for a correct repsonse.\n
+                      You will lose #{@config.inaccPenalty} points for a wrong response.\n
+                      You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
+                      If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
+                      That is, it is better to be right than wrong, and better to be fast than slow. \n
+                      How much better is for you to figure out: try to get as many points as you can! \n
+                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
+                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -200
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 9
+        r.clearScreen()
+        r.renderText "As a reminder, here are the rules: \n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the LEFT key\n
+                      followed by      -->  hit the RIGHT key\n
+                      followed by      -->  hit the RIGHT key", "black", 0, 0
+        r.renderDots @stimuli[0], "blue", -260, 40
+        r.renderDots @stimuli[1], "green", -60, 40
+        r.renderDots @stimuli[3], "blue", -260, 75
+        r.renderDots @stimuli[2], "green", -60, 75
+        r.renderDots @stimuli[0], "blue", -260, 110
+        r.renderDots @stimuli[2], "green", -60, 110
+        r.renderDots @stimuli[3], "blue", -260, 145
+        r.renderDots @stimuli[1], "green", -60, 145
+        
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
+      when 10
+        r.clearScreen()
+        @startExperiment()
+    
+# window.Experiment = LettersExperiment
+window.Experiment = DotsExperiment
 window.Renderer = Renderer
 

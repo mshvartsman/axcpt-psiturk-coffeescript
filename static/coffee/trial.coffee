@@ -33,14 +33,6 @@ class Trial
     e.state.blockBonus = e.state.blockBonus + @bonus
     e.state.globalBonus = e.state.globalBonus + @bonus
 
-  run: (state) => 
-    r.clearScreen() 
-    @startTime = performance.now() + e.config.retentionInterval + e.config.contextDur
-    r.renderText @contextItem, @contextColor, e.config.taskFontSize
-    setTimeout r.clearScreen, e.config.contextDur
-    setTimeout (=> r.renderText @targetItem, @targetColor, e.config.taskFontSize), e.config.retentionInterval + e.config.contextDur
-    setTimeout @enableInput, e.config.retentionInterval + e.config.contextDur
-    
   timedOut: =>
     r.clearScreen()
     r.renderText "Timed out! Press spacebar to continue."
@@ -60,7 +52,17 @@ class Trial
     addEventListener "keydown", @handleButtonPress
     @timeout = setTimeout @timedOut, e.config.deadline*1000
 
-class PracticeLetterTrial extends Trial
+class LetterTrial extends Trial
+  run: (state) => 
+    r.clearScreen() 
+    @startTime = performance.now() + e.config.retentionInterval + e.config.contextDur
+    r.renderText @contextItem, @contextColor, e.config.taskFontSize
+    setTimeout r.clearScreen, e.config.contextDur
+    setTimeout (=> r.renderText @targetItem, @targetColor, e.config.taskFontSize), e.config.retentionInterval + e.config.contextDur
+    setTimeout @enableInput, e.config.retentionInterval + e.config.contextDur
+
+
+class PracticeLetterTrial extends LetterTrial
   # remove timeout
   enableInput: => 
     addEventListener "keydown", @handleButtonPress
