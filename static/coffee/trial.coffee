@@ -98,4 +98,3 @@ class TestTrial extends PracticeTrial
     
     setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 180 ), e.config.spacebarTimeout
     setTimeout (=> addEventListener "keydown", @handleSpacebar), e.config.spacebarTimeout
-    addEventListener "keydown", @handleSpacebar
