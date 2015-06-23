@@ -23,11 +23,10 @@ class Renderer
     @canvas.style.display = "block"
     @canvas.style.margin = "0 auto"
     @canvas.style.padding = "0"
-    @canvas.width = 1024
-    @canvas.height = 768
+    @canvas.width = 1000
+    @canvas.height = 600
     @drawingContext = @canvas.getContext '2d'
     @drawingContext.font = "#{@config.instructionFontSize}px #{@config.fontFamily}"
-    # @drawingContext.font = "30px sans-serif"
     @drawingContext.textAlign = "center"
 
   renderText: (text, color="black", shiftx=0, shifty=0, size) ->
