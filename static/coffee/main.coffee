@@ -94,11 +94,9 @@ class Experiment
           setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run()), @config.iti
 
   endExperiment: (event) =>
-    if event.keyCode is 32
-      removeEventListener "keydown", @endExperiment
-      console.log "HI"
-      psiTurk.saveData()
-      psiTurk.showPage('debriefing.html');
+    removeEventListener "keydown", @endExperiment
+    psiTurk.saveData()
+    psiTurk.showPage('debriefing.html');
 
   endExperimentMoney: =>
     r.clearScreen()
