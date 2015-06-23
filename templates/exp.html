@@ -56,7 +56,7 @@
 		      iti: 1,
 		      retentionInterval: 1,
 		      spacebarTimeout: 1,
-		      blockRestDur: 5,
+		      blockRestDur: 1,
 		      nPraxTrials: 2,
 		      nTestAttempts: 50,
 		      testStreakToPass: 2,
@@ -72,7 +72,7 @@
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
-			}
+			};
 		  config = {
 		  	  condition: myCondition,
 		      blockSize: 10,
@@ -97,8 +97,9 @@
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
-			}
-			r = new Renderer(config_testing)
+			};
+			psiTurk.preloadPages(["debriefing.html"]);
+			r = new Renderer(config_testing);
 			e = new Experiment(config_testing);
 			e.run(); 
 
