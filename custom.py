@@ -86,7 +86,8 @@ def compute_bonus():
 
         for record in user_data['data']: # for line in data file
             trial = record['trialdata']
-            bonus += trial['bonus']
+            if trial['blockID'] != "Practice" && trial['blockID'] != "Test":
+                bonus += trial['bonus']
             # if trial['phase']=='TEST':
                 # if trial['hit']==True:
                     # bonus += 0.02
