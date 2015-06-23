@@ -54,8 +54,8 @@
       this.canvas.style.display = "block";
       this.canvas.style.margin = "0 auto";
       this.canvas.style.padding = "0";
-      this.canvas.width = 1024;
-      this.canvas.height = 768;
+      this.canvas.width = 1000;
+      this.canvas.height = 600;
       this.drawingContext = this.canvas.getContext('2d');
       this.drawingContext.font = this.config.instructionFontSize + "px " + this.config.fontFamily;
       return this.drawingContext.textAlign = "center";
@@ -365,6 +365,10 @@
 
     function Experiment(config) {
       this.config = config;
+      this.endExperimentFail = bind(this.endExperimentFail, this);
+      this.endExperimentTrials = bind(this.endExperimentTrials, this);
+      this.endExperimentMoney = bind(this.endExperimentMoney, this);
+      this.endExperiment = bind(this.endExperiment, this);
       this.handleSpacebar = bind(this.handleSpacebar, this);
       this.state = {
         blockId: 0,
@@ -492,31 +496,32 @@
       }
     };
 
-    Experiment.prototype.endExperiment = function() {
+    Experiment.prototype.endExperiment = function(event) {
+      removeEventListener("keydown", this.endExperiment);
       psiTurk.saveData();
-      return psiTurk.completeHIT();
+      return psiTurk.showPage('debriefing.html');
     };
 
     Experiment.prototype.endExperimentMoney = function() {
       r.clearScreen();
-      r.renderText("Congratulations! You have achieved the maximum possible bonus.\n You will be paid $" + (this.config.minPayment + this.config.maxBonus) + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ". Please press any key to continue.");
+      r.renderText("Congratulations! You have achieved the maximum possible bonus.\n You will be paid $" + (this.config.minPayment + this.config.maxBonus) + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ".\n Please press any key to continue.");
       psiTurk.recordUnstructuredData('expEndReason', 'maxMoney');
-      return addEventListener("keyDown", this.endExperiment);
+      return addEventListener("keydown", this.endExperiment);
     };
 
     Experiment.prototype.endExperimentTrials = function() {
       var cashBonus;
       r.clearScreen();
       cashBonus = this.state.globalBonus < 0 ? 0 : ExtMath.round(this.state.globalBonus / this.config.pointsPerDollar, 2);
-      r.renderText("Thank you! This concludes the experiment.\n Based on achieving " + (ExtMath.round(this.state.globalBonus, 2)) + " points,\n you will be paid $" + cashBonus + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ". Please press any key to continue.");
+      r.renderText("Thank you! This concludes the experiment.\n Based on achieving " + (ExtMath.round(this.state.globalBonus, 2)) + " points,\n you will be paid $" + cashBonus + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ".\n Please press any key to continue.");
       psiTurk.recordUnstructuredData('expEndReason', 'trials');
-      return addEventListener("keyDown", this.endExperiment);
+      return addEventListener("keydown", this.endExperiment);
     };
 
     Experiment.prototype.endExperimentFail = function() {
       r.clearScreen();
-      r.renderText("Unfortunately, you were unable to get " + this.config.testStreakToPass + " correct in a row.\n This means that you cannot continue with the experiment.\n You will receive $" + this.config.minPayment + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ". Please press any key to continue.");
-      return addEventListener("keyDown", this.endExperiment);
+      r.renderText("Unfortunately, you were unable to get " + this.config.testStreakToPass + " correct in a row.\n This means that you cannot continue with the experiment.\n You will receive $" + this.config.minPayment + " for your time.\n If you have any questions, email " + this.config.experimenterEmail + ".\n Please press any key to continue.");
+      return addEventListener("keydown", this.endExperiment);
     };
 
     Experiment.prototype.startExperiment = function() {
@@ -543,9 +548,9 @@
     Experiment.prototype.showInstructions = function() {
       switch (this.state.instructionSlide) {
         case 0:
-          r.renderText("Welcome to the experiment!\n In this experiment, you will make responses to pairs of stimuli.\n The two stimuli in each pair will be separated by a blank screen.\n There will be one correct response for each pair of stimuli.\n\n");
+          r.renderText("Welcome to the experiment!\n In this experiment, you will make responses to pairs of stimuli.\n The two stimuli in each pair will be separated by a blank screen.\n There will be one correct response for each pair of stimuli.\n\n", "black", 0, -200);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 200);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -554,9 +559,9 @@
           })(this)), this.config.spacebarTimeout);
         case 1:
           r.clearScreen();
-          r.renderText("First, you will learn the rules mapping stimuli to responses.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n");
+          r.renderText("First, you will learn the rules mapping stimuli to responses.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n", "black", 0, -200);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 300);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 100);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -565,13 +570,13 @@
           })(this)), this.config.spacebarTimeout);
         case 2:
           r.clearScreen();
-          r.renderText("Here is the first rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.");
-          this.renderStimInstruct(this.stimuli[0], "blue", -260, 35);
-          this.renderStimInstruct(this.stimuli[1], "green", -60, 35);
-          this.renderStimInstruct(this.stimuli[0], "blue", -260, 75);
-          this.renderStimInstruct(this.stimuli[2], "green", -60, 75);
+          r.renderText("Here is the first rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[0], "blue", -260, -165);
+          this.renderStimInstruct(this.stimuli[1], "green", -60, -165);
+          this.renderStimInstruct(this.stimuli[0], "blue", -260, -130);
+          this.renderStimInstruct(this.stimuli[2], "green", -60, -130);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 200);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -583,13 +588,13 @@
           return this.praxTrialTypes[this.aPrax[0]].run();
         case 4:
           r.clearScreen();
-          r.renderText("Here is the second rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.");
-          this.renderStimInstruct(this.stimuli[3], "blue", -260, 35);
-          this.renderStimInstruct(this.stimuli[2], "green", -60, 35);
-          this.renderStimInstruct(this.stimuli[3], "blue", -260, 75);
-          this.renderStimInstruct(this.stimuli[1], "green", -60, 75);
+          r.renderText("Here is the second rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[3], "blue", -260, -165);
+          this.renderStimInstruct(this.stimuli[2], "green", -60, -165);
+          this.renderStimInstruct(this.stimuli[3], "blue", -260, -130);
+          this.renderStimInstruct(this.stimuli[1], "green", -60, -130);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 200);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -617,9 +622,9 @@
           return this.testTrialTypes[this.testTrialOrder[0]].run();
         case 8:
           r.clearScreen();
-          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n You will lose " + this.config.inaccPenalty + " points for a wrong response.\n You will lose " + this.config.penaltyPerSecond + " points per second you take to respond. \n If you do not respond in " + this.config.deadline + " seconds, you will lose " + (this.config.deadline * this.config.penaltyPerSecond + this.config.inaccPenalty) + " points.\n That is, it is better to be right than wrong, and better to be fast than slow. \n How much better is for you to figure out: try to get as many points as you can! \n You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials total or earned " + (this.config.maxBonus * this.config.pointsPerDollar) + " points.\n\n", "black", 0, -200);
+          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n You will lose " + this.config.inaccPenalty + " points for a wrong response.\n You will lose " + this.config.penaltyPerSecond + " points per second you take to respond. \n If you do not respond in " + this.config.deadline + " seconds, you will lose " + (this.config.deadline * this.config.penaltyPerSecond + this.config.inaccPenalty) + " points.\n That is, it is better to be right than wrong, and better to be fast than slow. \n How much better is for you to figure out: try to get as many points as you can! \n You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials total or earned " + (this.config.maxBonus * this.config.pointsPerDollar) + " points.\n\n", "black", 0, -260);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 260);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 160);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -631,7 +636,7 @@
           r.renderText("As a reminder, here are the rules:", "black", 0, -200);
           this.renderRules(0, -150);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 260);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 160);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
