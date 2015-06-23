@@ -4,14 +4,15 @@
 <html>
 <head>
 	<title>Debriefing</title>
-	<link rel="stylesheet" href="/static/css/task.css" type="text/css" media="screen">
+	<!-- <link rel="stylesheet" href="/static/css/task.css" type="text/css" media="screen"> -->
+	<link rel=stylesheet href="/static/css/bootstrap.min.css" type="text/css">
 </head>
 <body>
-	<div id="debriefing">
+	<div id="debriefing" class="text-justify container">
 		<h1>Debriefing</h1>
 
 		<div id="debriefingtext">
-		<p>Thank you for your participation in our study!  Your anonymous data makes an
+		<p class="lead">Thank you for your participation in our study!  Your anonymous data makes an
 		important contribution to our understanding of how people make decisions. </p>
 		
 		<p>In this study, we are interested in understanding how people make decisions about things in front of them while trying to remember additional information that helps them make the decision. For example, if you drive and see a red light, usually that means to stop and wait. But in many states right turns on red are permitted, so when stopped on a red turn you might see the red light but also remember that you can go rather than waiting after you stop. 
@@ -24,18 +25,18 @@
 		</p>
 		
 		<p>If you have any questions about this research, you may contact the
-		principal investigator at <a href="mailto:pni.nccl.mturk+ms44@gmail.com">pni.nccl.mturk@gmail.com</a>.</p>
+		principal investigator at <a href="mailto:pni.nccl.mturk+ms44@gmail.com">pni.nccl.mturk+ms44@gmail.com</a>.</p>
 		</div>
 
-			<p class="cool">Do you agree to the following statement?</p>
+			<h3>Do you agree to the following statement?</h3>
 			<div id="affirmationbox">
-				<p>I feel that I have been adequately debriefed about the nature
+				<blockquote>I feel that I have been adequately debriefed about the nature
 					of the study.  The investigator has explained the purposes of the
 					research to me, and I feel that any questions I have asked were
-					satisfactorily answered.</p>
+					satisfactorily answered.</blockquote>
 					<table><tr>
-						<td id="affirmative" onClick="javascript:document.forms['accept'].submit()">Yes, I agree.</td>
-						<td id="negative" onClick="javascript:document.forms['decline'].submit()">No, please withhold my data. I will contact the experimenter with questions.</td>
+						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit()">Yes, I agree.</td>
+						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit()">No, please withhold my data. I will contact the experimenter with questions.</td>
 					</tr></table> 
 					<form id="accept" action="complete" method="post">
 						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
