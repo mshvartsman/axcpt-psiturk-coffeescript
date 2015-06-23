@@ -101,10 +101,10 @@ class Experiment
     r.clearScreen()
     r.renderText "Congratulations! You have achieved the maximum possible bonus.\n
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}\n
-                  You may close this window now."
-    # psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
-    @endExperiment() 
+                  If you have any questions, email #{@config.experimenterEmail}.
+                  Please press any key to continue."
+    psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
+    addEventListener "keyDown", @endExperiment
     
 
   endExperimentTrials: ->
@@ -113,20 +113,20 @@ class Experiment
     r.renderText "Thank you! This concludes the experiment.\n
                   Based on achieving #{ExtMath.round(@state.globalBonus,2)} points,\n
                   you will be paid $#{cashBonus} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}\n
-                  You may close this window now."
-    # psiTurk.recordUnstructuredData('expEndReason', 'trials')
-    @endExperiment() 
+                  If you have any questions, email #{@config.experimenterEmail}.
+                  Please press any key to continue."
+    psiTurk.recordUnstructuredData('expEndReason', 'trials')
+    addEventListener "keyDown", @endExperiment
 
   endExperimentFail: -> 
     r.clearScreen()
     r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
                   This means that you cannot continue with the experiment.\n
                   You will receive $#{@config.minPayment} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}\n
-                  You may close this window now."
-    psiTurk.saveData() 
-    @endExperiment() 
+                  If you have any questions, email #{@config.experimenterEmail}.
+                  Please press any key to continue."
+    # psiTurk.saveData() 
+    addEventListener "keyDown", @endExperiment
 
   startExperiment: ->
     @state.phase = "experiment"
@@ -137,7 +137,7 @@ class Experiment
   blockFeedback: ->
     r.clearScreen()
     # otherwise do feedback and next trial
-    feedbackText = "Done with this block! ! \n Your bonus for this block was #{ExtMath.round(@state.blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@state.globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
+    feedbackText = "Done with this block! \n Your bonus for this block was #{ExtMath.round(@state.blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@state.globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
     r.renderText feedbackText
     @state.blockBonus = 0
     setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
@@ -211,7 +211,7 @@ class Experiment
         r.clearScreen()
         r.renderText "Congratulations! You have learned the rules.\n
                       You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
-                      You will get #{@config.correctBonus} points for a correct repsonse.\n
+                      You will get #{@config.correctPoints} points for a correct repsonse.\n
                       You will lose #{@config.inaccPenalty} points for a wrong response.\n
                       You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
                       If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
