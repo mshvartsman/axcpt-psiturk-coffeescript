@@ -48,7 +48,7 @@
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
 		  	var accpenalty = [25, 25, 75, 75];
 		  	var timepenalty = [25, 75, 25, 75];
-		  	config_test = {
+		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
 		      nBlocks: 2,
@@ -76,7 +76,7 @@
 		  config = {
 		  	  condition: myCondition,
 		      blockSize: 10,
-		      nBlocks: 2,
+		      nBlocks: 10,
 		      contextDur: 500,
 		      iti: 500,
 		      retentionInterval: 2000,
@@ -98,8 +98,8 @@
 		      taskFontSize: 100,
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
 			}
-			r = new Renderer(config_test)
-			e = new Experiment(config_test);
+			r = new Renderer(config)
+			e = new Experiment(config);
 			e.run(); 
 
 		</script>
