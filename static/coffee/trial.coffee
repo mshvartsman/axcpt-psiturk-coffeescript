@@ -89,7 +89,7 @@ class TestTrial extends PracticeTrial
     r.clearScreen()
     if @acc is 1
       e.state.currentStreak = e.state.currentStreak + 1
-      r.renderText "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n\n Press the spacebar to continue."
+      r.renderText "Correct (Streak: #{e.state.currentStreak})! (#{e.config.nTestAttempts-e.state.testId-1} attempts left)\n"
     else
       e.state.currentStreak = 0
       r.renderText "Incorrect! (#{e.config.nTestAttempts-e.state.testId-1} attempts left).\n

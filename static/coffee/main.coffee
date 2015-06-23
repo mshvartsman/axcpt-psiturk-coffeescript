@@ -236,7 +236,7 @@ class Experiment
     r.renderText "followed by      -->  hit the LEFT key\n
                   followed by      -->  hit the LEFT key\n
                   followed by      -->  hit the RIGHT key\n
-                  followed by      -->  hit the RIGHT key.", "black", xoffset, yoffset
+                  followed by      -->  hit the RIGHT key", "black", xoffset, yoffset
     @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 105+yoffset
     @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 105+yoffset
     @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 35+yoffset
