@@ -338,7 +338,7 @@
       r.clearScreen();
       if (this.acc === 1) {
         e.state.currentStreak = e.state.currentStreak + 1;
-        r.renderText("Correct (Streak: " + e.state.currentStreak + ")! (" + (e.config.nTestAttempts - e.state.testId - 1) + " attempts left)\n\n Press the spacebar to continue.");
+        r.renderText("Correct (Streak: " + e.state.currentStreak + ")! (" + (e.config.nTestAttempts - e.state.testId - 1) + " attempts left)\n");
       } else {
         e.state.currentStreak = 0;
         r.renderText("Incorrect! (" + (e.config.nTestAttempts - e.state.testId - 1) + " attempts left).\n As a reminder, here are the rules: ", "black", 0, -150);
@@ -650,7 +650,7 @@
       if (yoffset == null) {
         yoffset = 0;
       }
-      r.renderText("followed by      -->  hit the LEFT key\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n followed by      -->  hit the RIGHT key.", "black", xoffset, yoffset);
+      r.renderText("followed by      -->  hit the LEFT key\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n followed by      -->  hit the RIGHT key", "black", xoffset, yoffset);
       this.renderStimInstruct(e.stimuli[0], "blue", -280 + xoffset, 105 + yoffset);
       this.renderStimInstruct(e.stimuli[2], "green", -60 + xoffset, 105 + yoffset);
       this.renderStimInstruct(e.stimuli[0], "blue", -280 + xoffset, 35 + yoffset);
