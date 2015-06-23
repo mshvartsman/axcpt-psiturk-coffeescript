@@ -59,13 +59,13 @@
 		      blockRestDur: 5,
 		      nPraxTrials: 2,
 		      nTestAttempts: 50,
-		      testStreakToPass: 5,
+		      testStreakToPass: 2,
 		      minPayment: 1,
 		      maxBonus: 5,
 		      correctPoints: 100,
 		      inaccPenalty: accpenalty[myCondition],
 		      penaltyPerSecond: timepenalty[myCondition],
-		      pointsPerDollar: 10000,
+		      pointsPerDollar: 1000,
 		      deadline: 5,
 		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
@@ -90,7 +90,7 @@
 		      correctPoints: 100,
 		      inaccPenalty: accpenalty[myCondition],
 		      penaltyPerSecond: timepenalty[myCondition],
-		      pointsPerDollar: 10000,
+		      pointsPerDollar: 1000,
 		      deadline: 5,
 		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
@@ -98,8 +98,8 @@
 		      taskFontSize: 100,
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
 			}
-			r = new Renderer(config)
-			e = new Experiment(config);
+			r = new Renderer(config_testing)
+			e = new Experiment(config_testing);
 			e.run(); 
 
 		</script>
