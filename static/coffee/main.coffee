@@ -101,7 +101,7 @@ class Experiment
     r.clearScreen()
     r.renderText "Congratulations! You have achieved the maximum possible bonus.\n
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}.
+                  If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
     psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
     addEventListener "keyDown", @endExperiment
@@ -113,7 +113,7 @@ class Experiment
     r.renderText "Thank you! This concludes the experiment.\n
                   Based on achieving #{ExtMath.round(@state.globalBonus,2)} points,\n
                   you will be paid $#{cashBonus} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}.
+                  If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
     psiTurk.recordUnstructuredData('expEndReason', 'trials')
     addEventListener "keyDown", @endExperiment
@@ -123,7 +123,7 @@ class Experiment
     r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
                   This means that you cannot continue with the experiment.\n
                   You will receive $#{@config.minPayment} for your time.\n
-                  If you have any questions, email #{@config.experimenterEmail}.
+                  If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
     # psiTurk.saveData() 
     addEventListener "keyDown", @endExperiment
