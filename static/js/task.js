@@ -347,12 +347,11 @@
       setTimeout((function() {
         return r.renderText("Press the spacebar to continue.", "black", 0, 180);
       }), e.config.spacebarTimeout);
-      setTimeout(((function(_this) {
+      return setTimeout(((function(_this) {
         return function() {
           return addEventListener("keydown", _this.handleSpacebar);
         };
       })(this)), e.config.spacebarTimeout);
-      return addEventListener("keydown", this.handleSpacebar);
     };
 
     return TestTrial;
