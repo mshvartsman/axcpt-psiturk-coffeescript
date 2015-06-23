@@ -93,21 +93,24 @@ class Experiment
         else 
           setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run()), @config.iti
 
-  endExperiment: ->
-    psiTurk.saveData() 
-    psiTurk.completeHIT()
+  endExperiment: (event) =>
+    if event.keyCode is 32
+      removeEventListener "keydown", @endExperiment
+      console.log "HI"
+      psiTurk.saveData()
+      psiTurk.showPage('debriefing.html');
 
-  endExperimentMoney: ->
+  endExperimentMoney: =>
     r.clearScreen()
     r.renderText "Congratulations! You have achieved the maximum possible bonus.\n
                   You will be paid $#{@config.minPayment + @config.maxBonus} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
     psiTurk.recordUnstructuredData('expEndReason', 'maxMoney')
-    addEventListener "keyDown", @endExperiment
+    addEventListener "keydown", @endExperiment
     
 
-  endExperimentTrials: ->
+  endExperimentTrials: =>
     r.clearScreen()
     cashBonus = if @state.globalBonus < 0 then 0 else ExtMath.round(@state.globalBonus / @config.pointsPerDollar, 2)
     r.renderText "Thank you! This concludes the experiment.\n
@@ -116,17 +119,16 @@ class Experiment
                   If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
     psiTurk.recordUnstructuredData('expEndReason', 'trials')
-    addEventListener "keyDown", @endExperiment
+    addEventListener "keydown", @endExperiment
 
-  endExperimentFail: -> 
+  endExperimentFail: => 
     r.clearScreen()
     r.renderText "Unfortunately, you were unable to get #{@config.testStreakToPass} correct in a row.\n
                   This means that you cannot continue with the experiment.\n
                   You will receive $#{@config.minPayment} for your time.\n
                   If you have any questions, email #{@config.experimenterEmail}.\n
                   Please press any key to continue."
-    # psiTurk.saveData() 
-    addEventListener "keyDown", @endExperiment
+    addEventListener "keydown", @endExperiment
 
   startExperiment: ->
     @state.phase = "experiment"
@@ -149,8 +151,8 @@ class Experiment
         r.renderText "Welcome to the experiment!\n
                       In this experiment, you will make responses to pairs of stimuli.\n
                       The two stimuli in each pair will be separated by a blank screen.\n
-                      There will be one correct response for each pair of stimuli.\n\n"
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+                      There will be one correct response for each pair of stimuli.\n\n", "black", 0, -200
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 1
         r.clearScreen()
@@ -159,20 +161,20 @@ class Experiment
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
                       If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
                       You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
-                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n"
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 300 ), @config.spacebarTimeout
+                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n", "black", 0, -200
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
         r.clearScreen()
         r.renderText "Here is the first rule:\n
                       followed by      -->  hit the LEFT key\n
                       followed by      -->  hit the RIGHT key\n\n
-                      Now you will get a chance to practice."
-        @renderStimInstruct @stimuli[0], "blue", -260, 35
-        @renderStimInstruct @stimuli[1], "green", -60, 35
-        @renderStimInstruct @stimuli[0], "blue", -260, 75
-        @renderStimInstruct @stimuli[2], "green", -60, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+                      Now you will get a chance to practice.", "black", 0, -200
+        @renderStimInstruct @stimuli[0], "blue", -260, -165
+        @renderStimInstruct @stimuli[1], "green", -60, -165
+        @renderStimInstruct @stimuli[0], "blue", -260, -130
+        @renderStimInstruct @stimuli[2], "green", -60, -130
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
         @state.phase = "APractice"
@@ -182,12 +184,12 @@ class Experiment
         r.renderText "Here is the second rule:\n
                       followed by      -->  hit the LEFT key\n
                       followed by      -->  hit the RIGHT key\n\n
-                      Now you will get a chance to practice."
-        @renderStimInstruct @stimuli[3], "blue", -260, 35
-        @renderStimInstruct @stimuli[2], "green", -60, 35
-        @renderStimInstruct @stimuli[3], "blue", -260, 75
-        @renderStimInstruct @stimuli[1], "green", -60, 75
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 200 ), @config.spacebarTimeout
+                      Now you will get a chance to practice.", "black", 0, -200
+        @renderStimInstruct @stimuli[3], "blue", -260, -165
+        @renderStimInstruct @stimuli[2], "green", -60, -165
+        @renderStimInstruct @stimuli[3], "blue", -260, -130
+        @renderStimInstruct @stimuli[1], "green", -60, -130
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
         @state.phase = "BPractice"
@@ -219,14 +221,14 @@ class Experiment
                       How much better is for you to figure out: try to get as many points as you can! \n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
                       Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
-                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -200
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+                      The HIT will end when you have done #{@config.nTrials} trials total or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -260
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 160 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
         r.clearScreen()
         r.renderText "As a reminder, here are the rules:", "black", 0, -200
         @renderRules(0, -150)
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 160 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 10
         r.clearScreen()
