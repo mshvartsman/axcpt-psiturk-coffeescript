@@ -8,6 +8,45 @@
 	<link rel=stylesheet href="/static/css/bootstrap.min.css" type="text/css">
 </head>
 <body>
+<script type="text/javascript">
+	var error_message, prompt_resubmit, resubmit;
+      error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
+      prompt_resubmit = function() {
+        console.log("resubmit prompt");
+        replaceBody(error_message);
+        return $('#resubmit').click(resubmit);
+      };
+      ({
+        finish: function() {
+          console.log("finishing");
+          return psiTurk.saveData({
+            success: function() {
+              console.log("success");
+              return psiTurk.computeBonus('compute_bonus', function() {
+                return psiTurk.completeHIT();
+              });
+            },
+            error: prompt_resubmit
+          });
+        }
+      });
+      resubmit = function() {
+        var reprompt;
+        console.log("resubmit func");
+        replaceBody('<h1>Trying to resubmit...</h1>');
+        reprompt = setTimeout(prompt_resubmit, 10000);
+        return psiTurk.saveData({
+          success: function() {
+            console.log("resubmit success");
+            clearInterval(reprompt);
+            return psiTurk.computeBonus('compute_bonus', function() {
+              return psiTurk.completeHIT();
+            });
+          },
+          error: prompt_resubmit
+        });
+      };
+</script>
 	<div id="debriefing" class="text-justify container">
 		<h1>Debriefing</h1>
 
@@ -35,8 +74,8 @@
 					research to me, and I feel that any questions I have asked were
 					satisfactorily answered.</blockquote>
 					<table><tr>
-						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit();">Yes, I agree.</td>
-						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit();">No, please withhold my data. I will contact the experimenter with questions.</td>
+						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit();psiturk.recordUnstructuredData("debriefConsent", true); finish(); ">Yes, I agree.</td>
+						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit();psiturk.recordUnstructuredData("debriefConsent", false); finish()">No, please withhold my data. I will contact the experimenter with questions.</td>
 					</tr></table> 
 					<form id="accept" action="complete" method="post">
 						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />

@@ -25,43 +25,6 @@ class Experiment
     psiTurk.computeBonus 'compute_bonus', ->
       psiTurk.saveData() 
 
-  debrief : () ->
-    error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
-    
-    prompt_resubmit = ->
-      console.log "resubmit prompt"
-      replaceBody error_message
-      $('#resubmit').click resubmit
-
-    finish : () -> 
-      console.log "finishing"
-      psiTurk.saveData
-        success: ->
-          console.log "success"
-          psiTurk.computeBonus 'compute_bonus', ->
-            psiTurk.completeHIT()
-        error: prompt_resubmit
-
-    resubmit = ->
-      console.log "resubmit func"
-      replaceBody '<h1>Trying to resubmit...</h1>'
-      reprompt = setTimeout(prompt_resubmit, 10000)
-      psiTurk.saveData
-        success: ->
-          console.log "resubmit success"
-          clearInterval reprompt
-          psiTurk.computeBonus 'compute_bonus', ->
-            psiTurk.completeHIT()
-        error: prompt_resubmit
-
-    psiTurk.showPage('debriefing.html')
-    $('#affirmative').click ->
-      psiturk.recordUnstructuredData("debriefConsent", true)
-      finish() 
-    
-    $('#affirmative').click ->
-      psiturk.recordUnstructuredData("debriefConsent", false)
-      finish() 
 
   shuffleTrials: ->
     trialCounts = (td * @config.nTrials for td in @config.trialDist)
@@ -137,7 +100,7 @@ class Experiment
 
   endExperiment: (event) =>
     removeEventListener "keydown", @endExperiment
-    @debrief() 
+    psiTurk.showPage('debriefing.html')
     
 
   endExperimentMoney: =>
