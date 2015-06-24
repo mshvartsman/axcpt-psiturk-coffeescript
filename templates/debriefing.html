@@ -35,8 +35,8 @@
 					research to me, and I feel that any questions I have asked were
 					satisfactorily answered.</blockquote>
 					<table><tr>
-						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit(); psiTurk.completeHIT()">Yes, I agree.</td>
-						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit(); psiTurk.completeHIT()">No, please withhold my data. I will contact the experimenter with questions.</td>
+						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit();">Yes, I agree.</td>
+						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit();">No, please withhold my data. I will contact the experimenter with questions.</td>
 					</tr></table> 
 					<form id="accept" action="complete" method="post">
 						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
