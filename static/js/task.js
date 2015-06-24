@@ -388,18 +388,52 @@
       this.shuffleTrials();
     }
 
-    Experiment.prototype.updateBonusAndSave = function() {
-      return psiTurk.saveData({
-        success: function() {
-          clearInterval(reprompt);
-          psiTurk.computeBonus('compute_bonus', function() {
-            finish();
+    Experiment.debrief = function() {
+      var error_message, prompt_resubmit, resubmit;
+      error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
+      prompt_resubmit = function() {
+        console.log("resubmit prompt");
+        replaceBody(error_message);
+        return $('#resubmit').click(resubmit);
+      };
+      ({
+        finish: function() {
+          console.log("finishing");
+          return psiTurk.saveData()({
+            success: function() {
+              console.log("success");
+              return psiTurk.computeBonus('compute_bonus', function() {
+                return psiTurk.completeHIT();
+              });
+            },
+            error: prompt_resubmit
           });
-        },
-        error: function() {
-          replaceBody("<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>");
-          return $('#resubmit').click(resubmit);
         }
+      });
+      resubmit = function() {
+        var reprompt;
+        console.log("resubmit func");
+        replaceBody('<h1>Trying to resubmit...</h1>');
+        reprompt = setTimeout(prompt_resubmit, 10000);
+        return psiTurk.saveData({
+          success: function() {
+            console.log("resubmit success");
+            clearInterval(reprompt);
+            return psiTurk.computeBonus('compute_bonus', function() {
+              return psiTurk.completeHIT();
+            });
+          },
+          error: prompt_resubmit
+        });
+      };
+      psiTurk.showPage('debriefing.html');
+      $('#affirmative').click(function() {
+        psiturk.recordUnstructuredData("debriefConsent", true);
+        return finish();
+      });
+      return $('#affirmative').click(function() {
+        psiturk.recordUnstructuredData("debriefConsent", false);
+        return finish();
       });
     };
 
@@ -513,8 +547,7 @@
 
     Experiment.prototype.endExperiment = function(event) {
       removeEventListener("keydown", this.endExperiment);
-      this.updateBonusAndSave();
-      return psiTurk.showPage('debriefing.html');
+      return this.debrief();
     };
 
     Experiment.prototype.endExperimentMoney = function() {
