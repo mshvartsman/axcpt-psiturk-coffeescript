@@ -8,84 +8,88 @@
 	<link rel=stylesheet href="/static/css/bootstrap.min.css" type="text/css">
 </head>
 <body>
-<script type="text/javascript">
-      error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
-      prompt_resubmit = function() {
-        console.log("resubmit prompt");
-        replaceBody(error_message);
-        return $('#resubmit').click(resubmit);
-      };
-      ({
-        finish: function() {
-          console.log("finishing");
-          return psiTurk.saveData({
-            success: function() {
-              console.log("success");
-              return psiTurk.computeBonus('compute_bonus', function() {
-                return psiTurk.completeHIT();
-              });
-            },
-            error: prompt_resubmit
-          });
-        }
-      });
-      resubmit = function() {
-        var reprompt;
-        console.log("resubmit func");
-        replaceBody('<h1>Trying to resubmit...</h1>');
-        reprompt = setTimeout(prompt_resubmit, 10000);
-        return psiTurk.saveData({
-          success: function() {
-            console.log("resubmit success");
-            clearInterval(reprompt);
-            return psiTurk.computeBonus('compute_bonus', function() {
-              return psiTurk.completeHIT();
-            });
-          },
-          error: prompt_resubmit
-        });
-      };
-</script>
+	<script type="text/javascript">
+		error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
+
+		replace_body = function(replacement){
+			$('body').html(replacement);
+		}
+
+		prompt_resubmit = function() {
+			console.log("resubmit prompt");
+			replace_body(error_message);
+			return $('#resubmit').click(resubmit);
+		};
+
+		finish= function() {
+			console.log("finishing");
+			return psiTurk.saveData({
+				success: function() {
+					console.log("success");
+					return psiTurk.computeBonus('compute_bonus', function() {
+						return psiTurk.completeHIT();
+					});
+				},
+				error: prompt_resubmit
+			});
+		}
+		resubmit = function() {
+			var reprompt;
+			console.log("resubmit func");
+			replace_body('<h1>Trying to resubmit...</h1>');
+			reprompt = setTimeout(prompt_resubmit, 10000);
+			return psiTurk.saveData({
+				success: function() {
+					console.log("resubmit success");
+					clearInterval(reprompt);
+					return psiTurk.computeBonus('compute_bonus', function() {
+						return psiTurk.completeHIT();
+					});
+				},
+				error: prompt_resubmit
+			});
+		};
+	</script>
 	<div id="debriefing" class="text-justify container">
 		<h1>Debriefing</h1>
 
 		<div id="debriefingtext">
-		<p class="lead">Thank you for your participation in our study!  Your anonymous data makes an
-		important contribution to our understanding of how people make decisions. </p>
-		
-		<p>In this study, we are interested in understanding how people make decisions about things in front of them while trying to remember additional information that helps them make the decision. For example, if you drive and see a red light, usually that means to stop and wait. But in many states right turns on red are permitted, so when stopped on a red turn you might see the red light but also remember that you can go rather than waiting after you stop. 
-		</p>
+			<p class="lead">Thank you for your participation in our study!  Your anonymous data makes an
+				important contribution to our understanding of how people make decisions. </p>
 
-		<p>This study is designed as a simplified version of that decision: the first "rule" stimulus you saw was designed to create a rule like the turn-on-red rule: often it required you to hit one button for the second stimulus (like the "stop on red" example), but occasionally it meant to hit the other button (the "turn on red" example). We are interested in how the timing and accuracy of that decision change depending on how much time pressure there is to make the decision, and how long you have to remember the rule.
-		</p>
+				<p>In this study, we are interested in understanding how people make decisions about things in front of them while trying to remember additional information that helps them make the decision. For example, if you drive and see a red light, usually that means to stop and wait. But in many states right turns on red are permitted, so when stopped on a red turn you might see the red light but also remember that you can go rather than waiting after you stop. 
+				</p>
 
-		<p>Such decisions are not only common in our daily life, but are also ones impaired in schizophrenia, anxiety, aging, and other circumstances. By understanding how they work, we might be able to help people with these problems compensate for their disorder.
-		</p>
-		
-		<p>If you have any questions about this research, you may contact the
-		principal investigator at <a href="mailto:pni.nccl.mturk+ms44@gmail.com">pni.nccl.mturk+ms44@gmail.com</a>.</p>
-		</div>
+				<p>This study is designed as a simplified version of that decision: the first "rule" stimulus you saw was designed to create a rule like the turn-on-red rule: often it required you to hit one button for the second stimulus (like the "stop on red" example), but occasionally it meant to hit the other button (the "turn on red" example). We are interested in how the timing and accuracy of that decision change depending on how much time pressure there is to make the decision, and how long you have to remember the rule.
+				</p>
 
-			<h3>Do you agree to the following statement?</h3>
-			<div id="affirmationbox">
-				<blockquote>I feel that I have been adequately debriefed about the nature
-					of the study.  The investigator has explained the purposes of the
-					research to me, and I feel that any questions I have asked were
-					satisfactorily answered.</blockquote>
-					<table><tr>
-						<td class="btn btn-success btn-block" id="affirmative" onClick="javascript:document.forms['accept'].submit();psiturk.recordUnstructuredData("debriefConsent", true); finish(); ">Yes, I agree.</td>
-						<td id="negative" class="btn btn-danger btn-block" onClick="javascript:document.forms['decline'].submit();psiturk.recordUnstructuredData("debriefConsent", false); finish()">No, please withhold my data. I will contact the experimenter with questions.</td>
-					</tr></table> 
-					<form id="accept" action="complete" method="post">
+				<p>Such decisions are not only common in our daily life, but are also ones impaired in schizophrenia, anxiety, aging, and other circumstances. By understanding how they work, we might be able to help people with these problems compensate for their disorder.
+				</p>
+
+				<p>If you have any questions about this research, you may contact the
+					principal investigator at <a href="mailto:pni.nccl.mturk+ms44@gmail.com">pni.nccl.mturk+ms44@gmail.com</a>.</p>
+				</div>
+
+				<h3>Do you agree to the following statement?</h3>
+				<div id="affirmationbox">
+					<blockquote>I feel that I have been adequately debriefed about the nature
+						of the study.  The investigator has explained the purposes of the
+						research to me, and I feel that any questions I have asked were
+						satisfactorily answered.</blockquote>
+						<table><tr>
+							<td class="btn btn-success btn-block" id="affirmative" onClick="javascript: psiTurk.recordUnstructuredData('debriefConsent', true); finish(); ">Yes, I agree.</td>
+							<td id="negative" class="btn btn-danger btn-block" onClick="psiTurk.recordUnstructuredData('debriefConsent', false); finish();">No, please withhold my data. I will contact the experimenter with questions.</td>
+						</tr></table> 
+					<!-- <form id="accept" action="complete" method="post">
 						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
 						<input type="hidden" name="agree" value="true" />
 					</form>
 					<form id="decline" action="complete" method="post">
 						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
 						<input type="hidden" name="agree" value="false" />
-					</form>
+					</form> -->
+				</div>
 			</div>
-	</div>
-</body>
+		</body>
 
-</html>
+		</html>
