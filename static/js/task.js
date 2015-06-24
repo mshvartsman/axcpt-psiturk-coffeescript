@@ -388,6 +388,21 @@
       this.shuffleTrials();
     }
 
+    Experiment.prototype.updateBonusAndSave = function() {
+      return psiTurk.saveData({
+        success: function() {
+          clearInterval(reprompt);
+          psiTurk.computeBonus('compute_bonus', function() {
+            finish();
+          });
+        },
+        error: function() {
+          replaceBody("<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>");
+          return $('#resubmit').click(resubmit);
+        }
+      });
+    };
+
     Experiment.prototype.shuffleTrials = function() {
       var i, k, l, len, ref, tc, td, trialCounts;
       trialCounts = (function() {
@@ -498,7 +513,7 @@
 
     Experiment.prototype.endExperiment = function(event) {
       removeEventListener("keydown", this.endExperiment);
-      psiTurk.saveData();
+      this.updateBonusAndSave();
       return psiTurk.showPage('debriefing.html');
     };
 
@@ -542,7 +557,7 @@
           return _this.trialTypes[_this.trialOrder[_this.state.trialIdGlobal]].run(_this);
         };
       })(this)), this.config.blockRestDur * 1000);
-      return psiTurk.saveData();
+      return this.updateBonusAndSave();
     };
 
     Experiment.prototype.showInstructions = function() {
