@@ -21,6 +21,18 @@ class Experiment
     @createTrialTypes() 
     @shuffleTrials() 
 
+  updateBonusAndSave : ->
+    psiTurk.saveData
+      success: ->
+        clearInterval reprompt
+        psiTurk.computeBonus 'compute_bonus', ->
+          finish()
+          return
+        return
+      error: ->
+        replaceBody "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>"
+        $('#resubmit').click resubmit
+
   shuffleTrials: ->
     trialCounts = (td * @config.nTrials for td in @config.trialDist)
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
@@ -95,8 +107,8 @@ class Experiment
 
   endExperiment: (event) =>
     removeEventListener "keydown", @endExperiment
-    psiTurk.saveData()
-    psiTurk.showPage('debriefing.html');
+    @updateBonusAndSave()
+    psiTurk.showPage('debriefing.html')
 
   endExperimentMoney: =>
     r.clearScreen()
@@ -141,7 +153,7 @@ class Experiment
     r.renderText feedbackText
     @state.blockBonus = 0
     setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
-    psiTurk.saveData() 
+    @updateBonusAndSave()
 
   showInstructions: ->
     switch @state.instructionSlide
