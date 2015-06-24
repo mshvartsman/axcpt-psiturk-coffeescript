@@ -388,13 +388,13 @@
       this.shuffleTrials();
     }
 
-    Experiment.updateBonusAndSave = function() {
+    Experiment.prototype.updateBonusAndSave = function() {
       return psiTurk.computeBonus('compute_bonus', function() {
         return psiTurk.saveData();
       });
     };
 
-    Experiment.debrief = function() {
+    Experiment.prototype.debrief = function() {
       var error_message, prompt_resubmit, resubmit;
       error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
       prompt_resubmit = function() {

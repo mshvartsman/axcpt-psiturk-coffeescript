@@ -21,11 +21,11 @@ class Experiment
     @createTrialTypes() 
     @shuffleTrials() 
 
-  @updateBonusAndSave: () ->
+  updateBonusAndSave: () ->
     psiTurk.computeBonus 'compute_bonus', ->
       psiTurk.saveData() 
 
-  @debrief : () ->
+  debrief : () ->
     error_message = "<h1>Oops!</h1><p>Something went wrong submitting your HIT. This might happen if you lose your internet connection. Press the button to resubmit.</p><button id='resubmit'>Resubmit</button>";
     
     prompt_resubmit = ->
