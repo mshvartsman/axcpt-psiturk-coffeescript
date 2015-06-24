@@ -35,7 +35,7 @@ class Experiment
 
     finish : () -> 
       console.log "finishing"
-      psiTurk.saveData()
+      psiTurk.saveData
         success: ->
           console.log "success"
           psiTurk.computeBonus 'compute_bonus', ->

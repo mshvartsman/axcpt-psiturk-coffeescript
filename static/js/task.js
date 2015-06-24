@@ -405,7 +405,7 @@
       ({
         finish: function() {
           console.log("finishing");
-          return psiTurk.saveData()({
+          return psiTurk.saveData({
             success: function() {
               console.log("success");
               return psiTurk.computeBonus('compute_bonus', function() {
