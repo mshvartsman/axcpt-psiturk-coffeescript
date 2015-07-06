@@ -91,7 +91,7 @@ def compute_bonus():
             # if trial['phase']=='TEST':
                 # if trial['hit']==True:
                     # bonus += 0.02
-        user.bonus = bonus
+        user.bonus = round(bonus, 2)
         db_session.add(user)
         db_session.commit()
         resp = {"bonusComputed": "success"}
