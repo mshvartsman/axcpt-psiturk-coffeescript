@@ -180,7 +180,8 @@
         "cresp": this.cresp,
         "rt": this.rt,
         "acc": this.acc,
-        "bonus": this.bonus
+        "bonus": this.bonus,
+        "dollars": this.bonus / e.config.pointsPerDollar
       });
     };
 
@@ -292,7 +293,8 @@
         "cresp": this.cresp,
         "rt": this.rt,
         "acc": this.acc,
-        "bonus": this.bonus
+        "bonus": 0,
+        "dollars": 0
       });
     };
 
@@ -330,7 +332,8 @@
         "cresp": this.cresp,
         "rt": this.rt,
         "acc": this.acc,
-        "bonus": this.bonus
+        "bonus": 0,
+        "dollars": 0
       });
     };
 
