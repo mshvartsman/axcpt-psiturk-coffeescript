@@ -312,7 +312,7 @@ class DotsExperiment extends Experiment
     r.renderDots stim, colour, xoffset, yoffset, 15, 20
 
 
-# window.Experiment = LettersExperiment
-window.Experiment = DotsExperiment
+window.Experiment = LettersExperiment
+# window.Experiment = DotsExperiment
 window.Renderer = Renderer
 
