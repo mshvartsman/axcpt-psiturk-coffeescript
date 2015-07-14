@@ -227,7 +227,10 @@
 
     Trial.prototype.timedOut = function() {
       r.clearScreen();
-      r.renderText("Timed out! Press spacebar to continue.");
+      r.renderText("Timed out! You lose " + (e.config.deadline * e.config.penaltyPerSecond + e.config.inaccPenalty) + " points! \n\n Press spacebar to continue.");
+      this.bonus = -e.config.deadline * e.config.penaltyPerSecond - e.config.inaccPenalty;
+      e.state.blockBonus = e.state.blockBonus + this.bonus;
+      e.state.globalBonus = e.state.globalBonus + this.bonus;
       removeEventListener("keydown", this.handleButtonPress);
       this.recordTrial();
       return addEventListener("keydown", this.handleSpacebar);

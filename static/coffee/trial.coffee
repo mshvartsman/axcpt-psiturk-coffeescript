@@ -35,7 +35,10 @@ class Trial
 
   timedOut: =>
     r.clearScreen()
-    r.renderText "Timed out! Press spacebar to continue."
+    r.renderText "Timed out! You lose #{e.config.deadline*e.config.penaltyPerSecond+e.config.inaccPenalty} points! \n\n Press spacebar to continue."
+    @bonus = -e.config.deadline*e.config.penaltyPerSecond-e.config.inaccPenalty
+    e.state.blockBonus = e.state.blockBonus + @bonus
+    e.state.globalBonus = e.state.globalBonus + @bonus
     removeEventListener "keydown", @handleButtonPress
     @recordTrial()
     addEventListener "keydown", @handleSpacebar
