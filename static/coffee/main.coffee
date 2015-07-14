@@ -152,14 +152,14 @@ class Experiment
     switch @state.instructionSlide
       when 0
         r.renderText "Welcome to the experiment!\n
-                      In this experiment, you will make responses to pairs of stimuli.\n
-                      The two stimuli in each pair will be separated by a blank screen.\n
-                      There will be one correct response for each pair of stimuli.\n\n", "black", 0, -200
+                      In this experiment, you will press keys based on pairs of #{@stimsName}.\n
+                      The two #{@stimsName} in each pair will be separated by a blank screen.\n
+                      There will be one correct key for each pair of #{@stimsName}.\n\n", "black", 0, -200
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 1
         r.clearScreen()
-        r.renderText "First, you will learn the rules mapping stimuli to responses.\n
+        r.renderText "First, you will learn the rules mapping #{@stimsName} to keys.\n
                       Then, we will test that you learned the mappings.\n
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
                       If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
@@ -170,13 +170,13 @@ class Experiment
       when 2
         r.clearScreen()
         r.renderText "Here is the first rule:\n
-                      followed by      -->  hit the '4' key\n
-                      followed by      -->  hit the '8' key\n\n
+                      followed by      -->  press the '4' key\n
+                      followed by      -->  press the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
-        @renderStimInstruct @stimuli[0], "blue", -240, -165
-        @renderStimInstruct @stimuli[1], "green", -40, -165
-        @renderStimInstruct @stimuli[0], "blue", -240, -130
-        @renderStimInstruct @stimuli[2], "green", -40, -130
+        @renderStimInstruct @stimuli[0], "blue", -250, -165
+        @renderStimInstruct @stimuli[1], "green", -50, -165
+        @renderStimInstruct @stimuli[0], "blue", -250, -130
+        @renderStimInstruct @stimuli[2], "green", -50, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
@@ -185,13 +185,13 @@ class Experiment
       when 4
         r.clearScreen()
         r.renderText "Here is the second rule:\n
-                      followed by      -->  hit the '4' key\n
-                      followed by      -->  hit the '8' key\n\n
+                      followed by      -->  press the '4' key\n
+                      followed by      -->  press the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
-        @renderStimInstruct @stimuli[3], "blue", -240, -165
-        @renderStimInstruct @stimuli[2], "green", -40, -165
-        @renderStimInstruct @stimuli[3], "blue", -240, -130
-        @renderStimInstruct @stimuli[1], "green", -40, -130
+        @renderStimInstruct @stimuli[3], "blue", -250, -165
+        @renderStimInstruct @stimuli[2], "green", -50, -165
+        @renderStimInstruct @stimuli[3], "blue", -250, -130
+        @renderStimInstruct @stimuli[1], "green", -50, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -238,18 +238,18 @@ class Experiment
         @startExperiment()
 
   renderRules : (xoffset=0, yoffset=0)->
-    r.renderText "followed by      -->  hit the '4' key\n
-                  followed by      -->  hit the '4' key\n
-                  followed by      -->  hit the '8' key\n
-                  followed by      -->  hit the '8' key", "black", xoffset, yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -240+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -40+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -240+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -40+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -240+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -40+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -240+xoffset, 0+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -40+xoffset, 0+yoffset
+    r.renderText "followed by      -->  press the '4' key\n
+                  followed by      -->  press the '4' key\n
+                  followed by      -->  press the '8' key\n
+                  followed by      -->  press the '8' key", "black", xoffset, yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -250+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -50+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -250+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -50+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -250+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -50+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -250+xoffset, 0+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -50+xoffset, 0+yoffset
 
   createTrialTypes: -> 
     @stimuli.shuffle() 
@@ -290,6 +290,7 @@ class Experiment
 
 
 class LettersExperiment extends Experiment  
+  stimsName : "letters"
   # @stimuli = ["A","X","B","Y"] # eventually this should be the whole alphabet
   stimuli: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
@@ -300,6 +301,7 @@ class LettersExperiment extends Experiment
     r.renderText stim, colour, xoffset, yoffset, e.config.taskFontSize
 
 class DotsExperiment extends Experiment  
+  stimsName : "dots"
   # all except 0000 which make it hard to see color
   # @stimuli : [[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[0,1,1,1],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1],[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]
   # all with 2 empty 2 filled

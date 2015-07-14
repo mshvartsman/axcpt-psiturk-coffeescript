@@ -556,7 +556,7 @@
     Experiment.prototype.showInstructions = function() {
       switch (this.state.instructionSlide) {
         case 0:
-          r.renderText("Welcome to the experiment!\n In this experiment, you will make responses to pairs of stimuli.\n The two stimuli in each pair will be separated by a blank screen.\n There will be one correct response for each pair of stimuli.\n\n", "black", 0, -200);
+          r.renderText("Welcome to the experiment!\n In this experiment, you will press keys based on pairs of " + this.stimsName + ".\n The two " + this.stimsName + " in each pair will be separated by a blank screen.\n There will be one correct key for each pair of " + this.stimsName + ".\n\n", "black", 0, -200);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -567,7 +567,7 @@
           })(this)), this.config.spacebarTimeout);
         case 1:
           r.clearScreen();
-          r.renderText("First, you will learn the rules mapping stimuli to responses.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be '4' and '8'. \n You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200);
+          r.renderText("First, you will learn the rules mapping " + this.stimsName + " to keys.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be '4' and '8'. \n You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 100);
           }), this.config.spacebarTimeout);
@@ -578,11 +578,11 @@
           })(this)), this.config.spacebarTimeout);
         case 2:
           r.clearScreen();
-          r.renderText("Here is the first rule:\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
-          this.renderStimInstruct(this.stimuli[0], "blue", -240, -165);
-          this.renderStimInstruct(this.stimuli[1], "green", -40, -165);
-          this.renderStimInstruct(this.stimuli[0], "blue", -240, -130);
-          this.renderStimInstruct(this.stimuli[2], "green", -40, -130);
+          r.renderText("Here is the first rule:\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[0], "blue", -250, -165);
+          this.renderStimInstruct(this.stimuli[1], "green", -50, -165);
+          this.renderStimInstruct(this.stimuli[0], "blue", -250, -130);
+          this.renderStimInstruct(this.stimuli[2], "green", -50, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -596,11 +596,11 @@
           return this.praxTrialTypes[this.aPrax[0]].run();
         case 4:
           r.clearScreen();
-          r.renderText("Here is the second rule:\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
-          this.renderStimInstruct(this.stimuli[3], "blue", -240, -165);
-          this.renderStimInstruct(this.stimuli[2], "green", -40, -165);
-          this.renderStimInstruct(this.stimuli[3], "blue", -240, -130);
-          this.renderStimInstruct(this.stimuli[1], "green", -40, -130);
+          r.renderText("Here is the second rule:\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[3], "blue", -250, -165);
+          this.renderStimInstruct(this.stimuli[2], "green", -50, -165);
+          this.renderStimInstruct(this.stimuli[3], "blue", -250, -130);
+          this.renderStimInstruct(this.stimuli[1], "green", -50, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -664,15 +664,15 @@
       if (yoffset == null) {
         yoffset = 0;
       }
-      r.renderText("followed by      -->  hit the '4' key\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n followed by      -->  hit the '8' key", "black", xoffset, yoffset);
-      this.renderStimInstruct(e.stimuli[0], "blue", -240 + xoffset, 105 + yoffset);
-      this.renderStimInstruct(e.stimuli[2], "green", -40 + xoffset, 105 + yoffset);
-      this.renderStimInstruct(e.stimuli[0], "blue", -240 + xoffset, 35 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -40 + xoffset, 35 + yoffset);
-      this.renderStimInstruct(e.stimuli[3], "blue", -240 + xoffset, 70 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -40 + xoffset, 70 + yoffset);
-      this.renderStimInstruct(e.stimuli[3], "blue", -240 + xoffset, 0 + yoffset);
-      return this.renderStimInstruct(e.stimuli[2], "green", -40 + xoffset, 0 + yoffset);
+      r.renderText("followed by      -->  press the '4' key\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n followed by      -->  press the '8' key", "black", xoffset, yoffset);
+      this.renderStimInstruct(e.stimuli[0], "blue", -250 + xoffset, 105 + yoffset);
+      this.renderStimInstruct(e.stimuli[2], "green", -50 + xoffset, 105 + yoffset);
+      this.renderStimInstruct(e.stimuli[0], "blue", -250 + xoffset, 35 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "green", -50 + xoffset, 35 + yoffset);
+      this.renderStimInstruct(e.stimuli[3], "blue", -250 + xoffset, 70 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "green", -50 + xoffset, 70 + yoffset);
+      this.renderStimInstruct(e.stimuli[3], "blue", -250 + xoffset, 0 + yoffset);
+      return this.renderStimInstruct(e.stimuli[2], "green", -50 + xoffset, 0 + yoffset);
     };
 
     Experiment.prototype.createTrialTypes = function() {
@@ -735,6 +735,8 @@
       return LettersExperiment.__super__.constructor.apply(this, arguments);
     }
 
+    LettersExperiment.prototype.stimsName = "letters";
+
     LettersExperiment.prototype.stimuli = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 
     LettersExperiment.prototype.renderStimInstruct = function(stim, colour, xoffset, yoffset) {
@@ -773,6 +775,8 @@
     function DotsExperiment() {
       return DotsExperiment.__super__.constructor.apply(this, arguments);
     }
+
+    DotsExperiment.prototype.stimsName = "dots";
 
     DotsExperiment.prototype.stimuli = [[0, 0, 1, 1], [0, 1, 0, 1], [0, 1, 1, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 1, 0, 0]];
 
