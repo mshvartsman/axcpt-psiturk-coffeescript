@@ -163,20 +163,20 @@ class Experiment
                       Then, we will test that you learned the mappings.\n
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
                       If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
-                      You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n
-                      You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n", "black", 0, -200
+                      You response keys will be '4' and '8'. \n
+                      You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 2
         r.clearScreen()
         r.renderText "Here is the first rule:\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n\n
+                      followed by      -->  hit the '4' key\n
+                      followed by      -->  hit the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
-        @renderStimInstruct @stimuli[0], "blue", -260, -165
-        @renderStimInstruct @stimuli[1], "green", -60, -165
-        @renderStimInstruct @stimuli[0], "blue", -260, -130
-        @renderStimInstruct @stimuli[2], "green", -60, -130
+        @renderStimInstruct @stimuli[0], "blue", -240, -165
+        @renderStimInstruct @stimuli[1], "green", -40, -165
+        @renderStimInstruct @stimuli[0], "blue", -240, -130
+        @renderStimInstruct @stimuli[2], "green", -40, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
@@ -185,13 +185,13 @@ class Experiment
       when 4
         r.clearScreen()
         r.renderText "Here is the second rule:\n
-                      followed by      -->  hit the LEFT key\n
-                      followed by      -->  hit the RIGHT key\n\n
+                      followed by      -->  hit the '4' key\n
+                      followed by      -->  hit the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
-        @renderStimInstruct @stimuli[3], "blue", -260, -165
-        @renderStimInstruct @stimuli[2], "green", -60, -165
-        @renderStimInstruct @stimuli[3], "blue", -260, -130
-        @renderStimInstruct @stimuli[1], "green", -60, -130
+        @renderStimInstruct @stimuli[3], "blue", -240, -165
+        @renderStimInstruct @stimuli[2], "green", -40, -165
+        @renderStimInstruct @stimuli[3], "blue", -240, -130
+        @renderStimInstruct @stimuli[1], "green", -40, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -238,35 +238,35 @@ class Experiment
         @startExperiment()
 
   renderRules : (xoffset=0, yoffset=0)->
-    r.renderText "followed by      -->  hit the LEFT key\n
-                  followed by      -->  hit the LEFT key\n
-                  followed by      -->  hit the RIGHT key\n
-                  followed by      -->  hit the RIGHT key", "black", xoffset, yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[0], "blue", -280+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -280+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -60+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[3], "blue", -280+xoffset, 0+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -60+xoffset, 0+yoffset
+    r.renderText "followed by      -->  hit the '4' key\n
+                  followed by      -->  hit the '4' key\n
+                  followed by      -->  hit the '8' key\n
+                  followed by      -->  hit the '8' key", "black", xoffset, yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -240+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -40+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[0], "blue", -240+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -40+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -240+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[1], "green", -40+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[3], "blue", -240+xoffset, 0+yoffset
+    @renderStimInstruct e.stimuli[2], "green", -40+xoffset, 0+yoffset
 
   createTrialTypes: -> 
     @stimuli.shuffle() 
-    @trialTypes = [new Trial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new Trial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new Trial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new Trial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @trialTypes = [new Trial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
+                  new Trial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
+                  new Trial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
+                  new Trial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
 
-    @praxTrialTypes = [new PracticeTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new PracticeTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new PracticeTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new PracticeTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @praxTrialTypes = [new PracticeTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
+                  new PracticeTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
+                  new PracticeTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
+                  new PracticeTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
 
-    @testTrialTypes = [new TestTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [70, 74], 70, "blue", "green"), 
-                  new TestTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [70, 74], 74, "blue", "green"), 
-                  new TestTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [70, 74], 74, "blue", "green"),
-                  new TestTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [70, 74], 70, "blue", "green")]
+    @testTrialTypes = [new TestTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
+                  new TestTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
+                  new TestTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
+                  new TestTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
 
 
     praxCounts = (@config.nPraxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also

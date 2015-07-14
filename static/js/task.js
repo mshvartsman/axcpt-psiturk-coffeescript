@@ -567,7 +567,7 @@
           })(this)), this.config.spacebarTimeout);
         case 1:
           r.clearScreen();
-          r.renderText("First, you will learn the rules mapping stimuli to responses.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be \"F\" (LEFT) and \"J\" (RIGHT). \n You should put your left index finger on \"F\" and right index finger on \"J\" now. \n\n", "black", 0, -200);
+          r.renderText("First, you will learn the rules mapping stimuli to responses.\n Then, we will test that you learned the mappings.\n If you fail, the HIT will end and you will earn the minimum payment ($" + this.config.minPayment + ").\n If you succeed, you will compete for an additional bonus of up to $" + this.config.maxBonus + ".\n You response keys will be '4' and '8'. \n You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 100);
           }), this.config.spacebarTimeout);
@@ -578,11 +578,11 @@
           })(this)), this.config.spacebarTimeout);
         case 2:
           r.clearScreen();
-          r.renderText("Here is the first rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.", "black", 0, -200);
-          this.renderStimInstruct(this.stimuli[0], "blue", -260, -165);
-          this.renderStimInstruct(this.stimuli[1], "green", -60, -165);
-          this.renderStimInstruct(this.stimuli[0], "blue", -260, -130);
-          this.renderStimInstruct(this.stimuli[2], "green", -60, -130);
+          r.renderText("Here is the first rule:\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[0], "blue", -240, -165);
+          this.renderStimInstruct(this.stimuli[1], "green", -40, -165);
+          this.renderStimInstruct(this.stimuli[0], "blue", -240, -130);
+          this.renderStimInstruct(this.stimuli[2], "green", -40, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -596,11 +596,11 @@
           return this.praxTrialTypes[this.aPrax[0]].run();
         case 4:
           r.clearScreen();
-          r.renderText("Here is the second rule:\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n\n Now you will get a chance to practice.", "black", 0, -200);
-          this.renderStimInstruct(this.stimuli[3], "blue", -260, -165);
-          this.renderStimInstruct(this.stimuli[2], "green", -60, -165);
-          this.renderStimInstruct(this.stimuli[3], "blue", -260, -130);
-          this.renderStimInstruct(this.stimuli[1], "green", -60, -130);
+          r.renderText("Here is the second rule:\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
+          this.renderStimInstruct(this.stimuli[3], "blue", -240, -165);
+          this.renderStimInstruct(this.stimuli[2], "green", -40, -165);
+          this.renderStimInstruct(this.stimuli[3], "blue", -240, -130);
+          this.renderStimInstruct(this.stimuli[1], "green", -40, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -664,23 +664,23 @@
       if (yoffset == null) {
         yoffset = 0;
       }
-      r.renderText("followed by      -->  hit the LEFT key\n followed by      -->  hit the LEFT key\n followed by      -->  hit the RIGHT key\n followed by      -->  hit the RIGHT key", "black", xoffset, yoffset);
-      this.renderStimInstruct(e.stimuli[0], "blue", -280 + xoffset, 105 + yoffset);
-      this.renderStimInstruct(e.stimuli[2], "green", -60 + xoffset, 105 + yoffset);
-      this.renderStimInstruct(e.stimuli[0], "blue", -280 + xoffset, 35 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -60 + xoffset, 35 + yoffset);
-      this.renderStimInstruct(e.stimuli[3], "blue", -280 + xoffset, 70 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -60 + xoffset, 70 + yoffset);
-      this.renderStimInstruct(e.stimuli[3], "blue", -280 + xoffset, 0 + yoffset);
-      return this.renderStimInstruct(e.stimuli[2], "green", -60 + xoffset, 0 + yoffset);
+      r.renderText("followed by      -->  hit the '4' key\n followed by      -->  hit the '4' key\n followed by      -->  hit the '8' key\n followed by      -->  hit the '8' key", "black", xoffset, yoffset);
+      this.renderStimInstruct(e.stimuli[0], "blue", -240 + xoffset, 105 + yoffset);
+      this.renderStimInstruct(e.stimuli[2], "green", -40 + xoffset, 105 + yoffset);
+      this.renderStimInstruct(e.stimuli[0], "blue", -240 + xoffset, 35 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "green", -40 + xoffset, 35 + yoffset);
+      this.renderStimInstruct(e.stimuli[3], "blue", -240 + xoffset, 70 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "green", -40 + xoffset, 70 + yoffset);
+      this.renderStimInstruct(e.stimuli[3], "blue", -240 + xoffset, 0 + yoffset);
+      return this.renderStimInstruct(e.stimuli[2], "green", -40 + xoffset, 0 + yoffset);
     };
 
     Experiment.prototype.createTrialTypes = function() {
       var i, k, l, len, len1, len2, m, n, o, p, pc, praxCounts, ref, ref1, ref2, tc, testCounts;
       this.stimuli.shuffle();
-      this.trialTypes = [new Trial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [70, 74], 70, "blue", "green"), new Trial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [70, 74], 74, "blue", "green"), new Trial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [70, 74], 74, "blue", "green"), new Trial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [70, 74], 70, "blue", "green")];
-      this.praxTrialTypes = [new PracticeTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [70, 74], 70, "blue", "green"), new PracticeTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [70, 74], 74, "blue", "green"), new PracticeTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [70, 74], 74, "blue", "green"), new PracticeTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [70, 74], 70, "blue", "green")];
-      this.testTrialTypes = [new TestTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [70, 74], 70, "blue", "green"), new TestTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [70, 74], 74, "blue", "green"), new TestTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [70, 74], 74, "blue", "green"), new TestTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [70, 74], 70, "blue", "green")];
+      this.trialTypes = [new Trial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new Trial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new Trial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new Trial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
+      this.praxTrialTypes = [new PracticeTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new PracticeTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new PracticeTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new PracticeTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
+      this.testTrialTypes = [new TestTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new TestTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new TestTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new TestTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
       praxCounts = (function() {
         var k, results;
         results = [];
