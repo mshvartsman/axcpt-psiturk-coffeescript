@@ -1,6 +1,6 @@
 [HIT Configuration]
-title = Decision Making Task
-description = Respond to letters based on rules
+title = Decision Making Task (up to $5 bonus)
+description = Respond to letters/symbols based on rules
 amt_keywords = Perception, Psychology
 lifetime = 24
 us_only = true

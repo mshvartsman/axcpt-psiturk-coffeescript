@@ -46,8 +46,8 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
-		  	var accpenalty = [25, 25, 75, 75];
-		  	var timepenalty = [25, 75, 25, 75];
+		  	var accpenalty = [10, 10, 40, 40];
+		  	var timepenalty = [10, 40, 10, 40];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
@@ -76,7 +76,7 @@
 		  config = {
 		  	  condition: myCondition,
 		      blockSize: 10,
-		      nBlocks: 10,
+		      nBlocks: 15,
 		      contextDur: 500,
 		      iti: 500,
 		      retentionInterval: 2000,
@@ -90,7 +90,7 @@
 		      correctPoints: 100,
 		      inaccPenalty: accpenalty[myCondition],
 		      penaltyPerSecond: timepenalty[myCondition],
-		      pointsPerDollar: 1000,
+		      pointsPerDollar: 2000,
 		      deadline: 5,
 		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
@@ -99,8 +99,8 @@
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
 			};
 			psiTurk.preloadPages(["debriefing.html"]);
-			r = new Renderer(config);
-			e = new Experiment(config);
+			r = new Renderer(config_testing);
+			e = new Experiment(config_testing);
 			e.run(); 
 
 		</script>
