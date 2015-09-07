@@ -46,10 +46,11 @@ class Trial
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
-        r.renderText "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points! \n\n Press the spacebar to continue."
+        r.renderText "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points!"
     else 
-        r.renderText "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points! \n\n Press the spacebar to continue."
-    addEventListener "keydown", @handleSpacebar
+        r.renderText "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points!"
+    setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 180 ), e.config.spacebarTimeout
+    setTimeout (=> addEventListener "keydown", @handleSpacebar), e.config.spacebarTimeout
 
   enableInput: =>
     addEventListener "keydown", @handleButtonPress
@@ -77,11 +78,11 @@ class PracticeTrial extends Trial
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
-      r.renderText "Correct!\n\n Press the spacebar to continue.", "green"
+      r.renderText "Correct!", "green"
     else 
-      r.renderText "Incorrect! \n\n Press the spacebar to continue.", "red"
-    
-    addEventListener "keydown", @handleSpacebar
+      r.renderText "Incorrect!", "red"
+    setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 180 ), e.config.spacebarTimeout
+    setTimeout (=> addEventListener "keydown", @handleSpacebar), e.config.spacebarTimeout
 
 class TestTrial extends PracticeTrial
 
