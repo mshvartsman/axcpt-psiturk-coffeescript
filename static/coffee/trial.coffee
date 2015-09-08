@@ -20,7 +20,7 @@ class Trial
       removeEventListener "keydown", @handleButtonPress
       @rt = performance.now() - @startTime
       @acc = if event.keyCode == @cresp then 1 else 0
-      @computeBonus() 
+      @computeBonus()
       clearTimeout @timeout
       @recordTrial() 
       @showFeedback()

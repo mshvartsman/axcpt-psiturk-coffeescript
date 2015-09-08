@@ -137,6 +137,9 @@ class Experiment
     @state.phase = "experiment"
     psiTurk.finishInstructions()
     @state.trialIdGlobal = 0 # reset so that trial IDs start at 0 uniformly
+    # initialize bonuses
+    @state.globalBonus = 0 
+    @state.bloclBonus = 0 
     @trialTypes[@trialOrder[0]].run()
 
   blockFeedback: ->
