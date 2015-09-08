@@ -239,11 +239,18 @@
     Trial.prototype.showFeedback = function() {
       r.clearScreen();
       if (this.acc === 1) {
-        r.renderText("Correct! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points! \n\n Press the spacebar to continue.");
+        r.renderText("Correct! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points!");
       } else {
-        r.renderText("Incorrect! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points! \n\n Press the spacebar to continue.");
+        r.renderText("Incorrect! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points!");
       }
-      return addEventListener("keydown", this.handleSpacebar);
+      setTimeout((function() {
+        return r.renderText("Press the spacebar to continue.", "black", 0, 180);
+      }), e.config.spacebarTimeout);
+      return setTimeout(((function(_this) {
+        return function() {
+          return addEventListener("keydown", _this.handleSpacebar);
+        };
+      })(this)), e.config.spacebarTimeout);
     };
 
     Trial.prototype.enableInput = function() {
@@ -304,11 +311,18 @@
     PracticeTrial.prototype.showFeedback = function() {
       r.clearScreen();
       if (this.acc === 1) {
-        r.renderText("Correct!\n\n Press the spacebar to continue.", "green");
+        r.renderText("Correct!", "green");
       } else {
-        r.renderText("Incorrect! \n\n Press the spacebar to continue.", "red");
+        r.renderText("Incorrect!", "red");
       }
-      return addEventListener("keydown", this.handleSpacebar);
+      setTimeout((function() {
+        return r.renderText("Press the spacebar to continue.", "black", 0, 180);
+      }), e.config.spacebarTimeout);
+      return setTimeout(((function(_this) {
+        return function() {
+          return addEventListener("keydown", _this.handleSpacebar);
+        };
+      })(this)), e.config.spacebarTimeout);
     };
 
     return PracticeTrial;
@@ -539,6 +553,8 @@
       this.state.phase = "experiment";
       psiTurk.finishInstructions();
       this.state.trialIdGlobal = 0;
+      this.state.globalBonus = 0;
+      this.state.bloclBonus = 0;
       return this.trialTypes[this.trialOrder[0]].run();
     };
 
@@ -633,7 +649,7 @@
           return this.testTrialTypes[this.testTrialOrder[0]].run();
         case 8:
           r.clearScreen();
-          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n You will lose " + this.config.inaccPenalty + " points for a wrong response.\n You will lose " + this.config.penaltyPerSecond + " points per second you take to respond. \n If you do not respond in " + this.config.deadline + " seconds, you will lose " + (this.config.deadline * this.config.penaltyPerSecond + this.config.inaccPenalty) + " points.\n That is, it is better to be right than wrong, and better to be fast than slow. \n How much better is for you to figure out: try to get as many points as you can! \n You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials total or earned " + (this.config.maxBonus * this.config.pointsPerDollar) + " points.\n\n", "black", 0, -260);
+          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n You will lose " + this.config.inaccPenalty + " points for a wrong response.\n You will lose " + this.config.penaltyPerSecond + " points per second you take to respond. \n If you do not respond in " + this.config.deadline + " seconds, you will lose " + (this.config.deadline * this.config.penaltyPerSecond + this.config.inaccPenalty) + " points.\n That is, it is better to be right than wrong, and better to be fast than slow. \n Try to get as many points as you can! \n You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials or earned " + (this.config.maxBonus * this.config.pointsPerDollar) + " points.\n\n", "black", 0, -260);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 160);
           }), this.config.spacebarTimeout);
