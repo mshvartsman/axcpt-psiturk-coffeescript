@@ -46,8 +46,8 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
-		  	var accpenalty = [10, 10, 40, 40];
-		  	var timepenalty = [10, 40, 10, 40];
+		  	var accpenalty = [2, 2, 10, 10];
+		  	var timepenalty = [2, 10, 2, 10];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
@@ -62,7 +62,7 @@
 		      testStreakToPass: 2,
 		      minPayment: 1,
 		      maxBonus: 5,
-		      correctPoints: 100,
+		      correctPoints: 80,
 		      inaccPenalty: accpenalty[myCondition],
 		      penaltyPerSecond: timepenalty[myCondition],
 		      pointsPerDollar: 1000,
@@ -80,17 +80,17 @@
 		      contextDur: 500,
 		      iti: 500,
 		      retentionInterval: 2000,
-		      spacebarTimeout: 1000,
+		      spacebarTimeout: 500,
 		      blockRestDur: 5,
 		      nPraxTrials: 6,
 		      nTestAttempts: 50,
 		      testStreakToPass: 5,
 		      minPayment: 1,
 		      maxBonus: 5,
-		      correctPoints: 100,
+		      correctPoints: 20,
 		      inaccPenalty: accpenalty[myCondition],
 		      penaltyPerSecond: timepenalty[myCondition],
-		      pointsPerDollar: 5000,
+		      pointsPerDollar: 1000,
 		      deadline: 5,
 		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
