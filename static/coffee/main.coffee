@@ -223,12 +223,16 @@ class Experiment
                       You will lose #{@config.inaccPenalty} points for a wrong response.\n
                       You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
                       If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
-                      That is, it is better to be right than wrong, and better to be fast than slow. \n
-                      Try to get as many points as you can! \n
-                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      That is, it is better to be right than wrong, and better to be fast than slow,\n
+                      but figuring out the tradeoff is up to you (hint: 100% correct will be too slow\n
+                      and not maximize your bonus). You will receive $1 for each #{@config.pointsPerDollar} points.\n
                       Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
-                      The HIT will end when you have done #{@config.nTrials} trials or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n\n", "black", 0, -260
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 160 ), @config.spacebarTimeout
+                      The HIT will end when you have done #{@config.nTrials} trials or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n
+                      \n
+                      Again, you can maximize your points without getting every answer right.\n
+                      Try to get as many points as you can! \n
+                      \n", "black", 0, -260
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
         r.clearScreen()
