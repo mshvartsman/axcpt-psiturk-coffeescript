@@ -649,9 +649,9 @@
           return this.testTrialTypes[this.testTrialOrder[0]].run();
         case 8:
           r.clearScreen();
-          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n You will lose " + this.config.inaccPenalty + " points for a wrong response.\n You will lose " + this.config.penaltyPerSecond + " points per second you take to respond. \n If you do not respond in " + this.config.deadline + " seconds, you will lose " + (this.config.deadline * this.config.penaltyPerSecond + this.config.inaccPenalty) + " points.\n That is, it is better to be right than wrong, and better to be fast than slow,\n but figuring out the tradeoff is up to you (hint: 100% correct will be too slow\n and not maximize your bonus). You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials or earned " + (this.config.maxBonus * this.config.pointsPerDollar) + " points.\n \n Again, you can maximize your points without getting every answer right!\n Try to get as many points as you can! \n \n", "black", 0, -260);
+          r.renderText("Congratulations! You have learned the rules.\n You will now see up to " + this.config.nTrials + " more trials in blocks of " + this.config.blockSize + ".\n You will get " + this.config.correctPoints + " points for a correct repsonse.\n If you do not respond in " + this.config.deadline + " seconds, the experiment will  \n just continue to the next trial and you will not gain points.\n You will receive $1 for each " + this.config.pointsPerDollar + " points.\n Your points can be negative but you cannot lose your $" + this.config.minPayment + " baseline.\n The HIT will end when you have done " + this.config.nTrials + " trials.\n \n \n", "black", 0, -260);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 260);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 100);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
@@ -663,7 +663,7 @@
           r.renderText("As a reminder, here are the rules:", "black", 0, -200);
           this.renderRules(0, -150);
           setTimeout((function() {
-            return r.renderText("Press the spacebar to continue.", "black", 0, 160);
+            return r.renderText("Press the spacebar to continue.", "black", 0, 100);
           }), this.config.spacebarTimeout);
           return setTimeout(((function(_this) {
             return function() {
