@@ -60,11 +60,11 @@ class Trial
   run: (state) => 
     r.clearScreen() 
     @ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD)
-    @startTime = performance.now() + ri + e.config.contextDur
+    @startTime = performance.now() + @ri + e.config.contextDur
     @renderFunc @contextItem, @contextColor 
     setTimeout r.clearScreen, e.config.contextDur
-    setTimeout (=> @renderFunc @targetItem, @targetColor), ri + e.config.contextDur
-    setTimeout @enableInput, ri + e.config.contextDur
+    setTimeout (=> @renderFunc @targetItem, @targetColor), @ri + e.config.contextDur
+    setTimeout @enableInput, @ri + e.config.contextDur
 
 class PracticeTrial extends Trial
   # remove timeout
