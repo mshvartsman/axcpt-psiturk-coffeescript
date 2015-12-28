@@ -1,3 +1,5 @@
+random = new Random
+
 # inspired by http://www.calicowebdev.com/2011/05/01/simple-coffeescript-introduction/
 class ExtMath extends Math
   @round = (x, precision = 0) ->
@@ -63,3 +65,13 @@ class Renderer
 
   clearScreen: =>
     @drawingContext.clearRect(0,0, @canvas.width, @canvas.height)
+
+# https://robots.thoughtbot.com/module-pattern-in-javascript-and-coffeescript
+window.utils = {} 
+
+utils.sampleRetentionInterval = (means, sd) ->
+  # sample a mean
+  m = random.sample(means, 1)[0]
+  ri = random.gauss(m, sd)
+  ri = if ri < 0 then 0 else ri
+  ri
