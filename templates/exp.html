@@ -46,8 +46,8 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
-		  	var accpenalty = [2, 2, 10, 10];
-		  	var timepenalty = [2, 10, 2, 10];
+			// trial dists
+		  	var trialDists = [[0.1, 0.4, 0.4, 0.1], [0.1, 0.4, 0.1, 0.4], [0.2, 0.3, 0.2, 0.3], [0.2, 0.3, 0.3, 0.2]];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
@@ -62,12 +62,12 @@
 		      testStreakToPass: 2,
 		      minPayment: 1,
 		      maxBonus: 5,
-		      correctPoints: 80,
-		      inaccPenalty: accpenalty[myCondition],
-		      penaltyPerSecond: timepenalty[myCondition],
+		      correctPoints: 10,
+		      inaccPenalty: 0,
+		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
 		      deadline: 5,
-		      trialDist: [0.5, 0.2, 0.2, 0.1],
+		      trialDist: trialDists[myCondition],
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
@@ -87,20 +87,22 @@
 		      testStreakToPass: 5,
 		      minPayment: 1,
 		      maxBonus: 5,
-		      correctPoints: 20,
-		      inaccPenalty: accpenalty[myCondition],
-		      penaltyPerSecond: timepenalty[myCondition],
+		      correctPoints: 10,
+		      inaccPenalty: 0,
+		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
 		      deadline: 5,
-		      trialDist: [0.5, 0.2, 0.2, 0.1],
+		      trialDist: trialDists[myCondition],
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
 			};
 			psiTurk.preloadPages(["debriefing.html"]);
-			r = new Renderer(config);
-			e = new Experiment(config);
+			// r = new Renderer(config);
+			// e = new Experiment(config);
+			r = new Renderer(config_testing);
+			e = new Experiment(config_testing);
 			e.run(); 
 
 		</script>
