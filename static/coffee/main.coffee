@@ -220,25 +220,20 @@ class Experiment
         r.renderText "Congratulations! You have learned the rules.\n
                       You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
                       You will get #{@config.correctPoints} points for a correct repsonse.\n
-                      You will lose #{@config.inaccPenalty} points for a wrong response.\n
-                      You will lose #{@config.penaltyPerSecond} points per second you take to respond. \n
-                      If you do not respond in #{@config.deadline} seconds, you will lose #{@config.deadline*@config.penaltyPerSecond+@config.inaccPenalty} points.\n
-                      That is, it is better to be right than wrong, and better to be fast than slow,\n
-                      but figuring out the tradeoff is up to you (hint: 100% correct will be too slow\n
-                      and not maximize your bonus). You will receive $1 for each #{@config.pointsPerDollar} points.\n
+                      If you do not respond in #{@config.deadline} seconds, the experiment will  \n 
+                      just continue to the next trial and you will not gain points.\n
+                      You will receive $1 for each #{@config.pointsPerDollar} points.\n
                       Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
-                      The HIT will end when you have done #{@config.nTrials} trials or earned #{@config.maxBonus*@config.pointsPerDollar} points.\n
+                      The HIT will end when you have done #{@config.nTrials} trials.\n
                       \n
-                      Again, you can maximize your points without getting every answer right.\n
-                      Try to get as many points as you can! \n
                       \n", "black", 0, -260
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 260 ), @config.spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 9
         r.clearScreen()
         r.renderText "As a reminder, here are the rules:", "black", 0, -200
         @renderRules(0, -150)
-        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 160 ), @config.spacebarTimeout
+        setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 10
         r.clearScreen()
