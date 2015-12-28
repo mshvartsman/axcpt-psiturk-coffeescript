@@ -46,15 +46,14 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
-			// trial dists
-		  	var trialDists = [[0.1, 0.4, 0.4, 0.1], [0.1, 0.4, 0.1, 0.4], [0.2, 0.3, 0.2, 0.3], [0.2, 0.3, 0.3, 0.2]];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
 		      nBlocks: 2,
 		      contextDur: 1,
 		      iti: 1,
-		      retentionInterval: 1,
+		      riMeans: [50, 500],
+		      riSD : 25,
 		      spacebarTimeout: 1,
 		      blockRestDur: 1,
 		      nPraxTrials: 2,
@@ -67,7 +66,7 @@
 		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
 		      deadline: 5,
-		      trialDist: trialDists[myCondition],
+		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
@@ -79,7 +78,8 @@
 		      nBlocks: 24,
 		      contextDur: 500,
 		      iti: 500,
-		      retentionInterval: 2000,
+		      riMeans: [10, 25, 50, 100, 500, 1000],
+		      riSD : 25,
 		      spacebarTimeout: 500,
 		      blockRestDur: 5,
 		      nPraxTrials: 6,
@@ -92,7 +92,7 @@
 		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
 		      deadline: 5,
-		      trialDist: trialDists[myCondition],
+		      trialDist: [0.5, 0.2, 0.2, 0.1],
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
