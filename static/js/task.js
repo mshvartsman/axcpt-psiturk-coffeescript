@@ -666,8 +666,6 @@ A fairly direct port of the Python `random` module to JavaScript
     m = random.sample(means, 1)[0];
     ri = random.gauss(m, sd);
     ri = ri < 0 ? 0 : ri;
-    console.log(m);
-    console.log(sd);
     return ri;
   };
 
@@ -677,6 +675,8 @@ A fairly direct port of the Python `random` module to JavaScript
     Trial.prototype.rt = null;
 
     Trial.prototype.acc = null;
+
+    Trial.prototype.ri = null;
 
     Trial.prototype.bonus = null;
 
@@ -702,6 +702,7 @@ A fairly direct port of the Python `random` module to JavaScript
         "contextItem": this.contextItem,
         "targetItem": this.targetItem,
         "cresp": this.cresp,
+        "ri": this.ri,
         "rt": this.rt,
         "acc": this.acc,
         "bonus": this.bonus,
@@ -783,19 +784,17 @@ A fairly direct port of the Python `random` module to JavaScript
     };
 
     Trial.prototype.run = function(state) {
-      var ri;
       r.clearScreen();
-      ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD);
-      console.log(ri);
-      this.startTime = performance.now() + ri + e.config.contextDur;
+      this.ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD);
+      this.startTime = performance.now() + this.ri + e.config.contextDur;
       this.renderFunc(this.contextItem, this.contextColor);
       setTimeout(r.clearScreen, e.config.contextDur);
       setTimeout(((function(_this) {
         return function() {
           return _this.renderFunc(_this.targetItem, _this.targetColor);
         };
-      })(this)), ri + e.config.contextDur);
-      return setTimeout(this.enableInput, ri + e.config.contextDur);
+      })(this)), this.ri + e.config.contextDur);
+      return setTimeout(this.enableInput, this.ri + e.config.contextDur);
     };
 
     return Trial;
