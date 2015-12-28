@@ -2,6 +2,7 @@ class Trial
   startTime: null
   rt: null
   acc: null
+  ri: null
   bonus: null
   next: null
   timeout: null
@@ -13,7 +14,7 @@ class Trial
       e.doNext()
 
   recordTrial: () =>
-    psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":e.state.blockId, "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "rt":@rt, "acc":@acc, "bonus":@bonus, "dollars":@bonus/e.config.pointsPerDollar}
+    psiTurk.recordTrialData {"trialId":e.state.trialIdGlobal, "blockID":e.state.blockId, "context":@context, "target":@target, "contextItem": @contextItem, "targetItem":@targetItem, "cresp":@cresp, "ri":@ri, "rt":@rt, "acc":@acc, "bonus":@bonus, "dollars":@bonus/e.config.pointsPerDollar}
 
   handleButtonPress: (event) =>
     if event.keyCode in @keys # it's one of our legal responses
@@ -58,7 +59,7 @@ class Trial
 
   run: (state) => 
     r.clearScreen() 
-    ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD)
+    @ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD)
     @startTime = performance.now() + ri + e.config.contextDur
     @renderFunc @contextItem, @contextColor 
     setTimeout r.clearScreen, e.config.contextDur
