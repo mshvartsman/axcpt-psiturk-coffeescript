@@ -165,7 +165,7 @@ class Experiment
         r.renderText "First, you will learn the rules mapping #{@stimsName} to keys.\n
                       Then, we will test that you learned the mappings.\n
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
-                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
+                      If you succeed, you will compete for an additional bonus (up to $#{@config.maxBonus}).\n
                       You response keys will be '4' and '8'. \n
                       You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
@@ -220,10 +220,8 @@ class Experiment
         r.renderText "Congratulations! You have learned the rules.\n
                       You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
                       You will get #{@config.correctPoints} points for a correct repsonse.\n
-                      If you do not respond in #{@config.deadline} seconds, the experiment will  \n 
-                      just continue to the next trial and you will not gain points.\n
+                      You have up to #{@config.deadline} seconds to respond on each trial.\n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
-                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
                       The HIT will end when you have done #{@config.nTrials} trials.\n
                       \n
                       \n", "black", 0, -260
