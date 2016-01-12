@@ -35,22 +35,23 @@ class Trial
 
   timedOut: =>
     r.clearScreen()
-    r.renderText "Timed out! You lose #{e.config.deadline*e.config.penaltyPerSecond+e.config.inaccPenalty} points! \n\n Press spacebar to continue."
+    r.renderText "Timed out!"
     @bonus = -e.config.deadline*e.config.penaltyPerSecond-e.config.inaccPenalty
     e.state.blockBonus = e.state.blockBonus + @bonus
     e.state.globalBonus = e.state.globalBonus + @bonus
     removeEventListener "keydown", @handleButtonPress
     @recordTrial()
-    addEventListener "keydown", @handleSpacebar
+    setTimeout (-> e.doNext() ), e.config.feedbackDispTime
 
   showFeedback: =>
     r.clearScreen()
     if @acc is 1 
-        r.renderText "Correct! \n Your RT was #{ExtMath.round(@rt, 2)}ms! \n You get #{ExtMath.round(@bonus, 2)} points!"
+        @renderFunc @targetItem, "green"
+        r.renderText "RT: #{ExtMath.round(@rt, 2)}ms!", "green", 0, 100
     else 
-        r.renderText "Incorrect! \n Your RT was #{ExtMath.round(@rt,2)}ms! \n You get #{ExtMath.round(@bonus,2)} points!"
-    setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 180 ), e.config.spacebarTimeout
-    setTimeout (=> addEventListener "keydown", @handleSpacebar), e.config.spacebarTimeout
+        @renderFunc @targetItem, "red"
+        r.renderText "RT: #{ExtMath.round(@rt,2)}ms!", "red", 0, 100
+    setTimeout (-> e.doNext() ), e.config.feedbackDispTime
 
   enableInput: =>
     addEventListener "keydown", @handleButtonPress

@@ -227,30 +227,29 @@
 
     Trial.prototype.timedOut = function() {
       r.clearScreen();
-      r.renderText("Timed out! You lose " + (e.config.deadline * e.config.penaltyPerSecond + e.config.inaccPenalty) + " points! \n\n Press spacebar to continue.");
+      r.renderText("Timed out!");
       this.bonus = -e.config.deadline * e.config.penaltyPerSecond - e.config.inaccPenalty;
       e.state.blockBonus = e.state.blockBonus + this.bonus;
       e.state.globalBonus = e.state.globalBonus + this.bonus;
       removeEventListener("keydown", this.handleButtonPress);
       this.recordTrial();
-      return addEventListener("keydown", this.handleSpacebar);
+      return setTimeout((function() {
+        return e.doNext();
+      }), e.config.feedbackDispTime);
     };
 
     Trial.prototype.showFeedback = function() {
       r.clearScreen();
       if (this.acc === 1) {
-        r.renderText("Correct! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points!");
+        this.renderFunc(this.targetItem, "green");
+        r.renderText("RT: " + (ExtMath.round(this.rt, 2)) + "ms!", "green", 0, 100);
       } else {
-        r.renderText("Incorrect! \n Your RT was " + (ExtMath.round(this.rt, 2)) + "ms! \n You get " + (ExtMath.round(this.bonus, 2)) + " points!");
+        this.renderFunc(this.targetItem, "red");
+        r.renderText("RT: " + (ExtMath.round(this.rt, 2)) + "ms!", "red", 0, 100);
       }
-      setTimeout((function() {
-        return r.renderText("Press the spacebar to continue.", "black", 0, 180);
-      }), e.config.spacebarTimeout);
-      return setTimeout(((function(_this) {
-        return function() {
-          return addEventListener("keydown", _this.handleSpacebar);
-        };
-      })(this)), e.config.spacebarTimeout);
+      return setTimeout((function() {
+        return e.doNext();
+      }), e.config.feedbackDispTime);
     };
 
     Trial.prototype.enableInput = function() {
@@ -389,6 +388,7 @@
       this.endExperimentTrials = bind(this.endExperimentTrials, this);
       this.endExperimentMoney = bind(this.endExperimentMoney, this);
       this.endExperiment = bind(this.endExperiment, this);
+      this.handleSpacebarBlockEnd = bind(this.handleSpacebarBlockEnd, this);
       this.handleSpacebar = bind(this.handleSpacebar, this);
       this.state = {
         blockId: 0,
@@ -416,24 +416,34 @@
 
     Experiment.prototype.shuffleTrials = function() {
       var i, k, l, len, ref, tc, td, trialCounts;
+      console.log(this.config.trialDist);
       trialCounts = (function() {
         var k, len, ref, results;
         ref = this.config.trialDist;
         results = [];
         for (k = 0, len = ref.length; k < len; k++) {
           td = ref[k];
-          results.push(td * this.config.nTrials);
+          results.push(td * this.config.blockSize);
         }
         return results;
       }).call(this);
-      this.trialOrder = [];
+      console.log(this.config.condition);
+      console.log(trialCounts);
+      this.trialOrderBlock = [];
       for (i = k = 0, len = trialCounts.length; k < len; i = ++k) {
         tc = trialCounts[i];
         for (l = 1, ref = tc; 1 <= ref ? l <= ref : l >= ref; 1 <= ref ? l++ : l--) {
-          this.trialOrder = this.trialOrder.concat(i);
+          this.trialOrderBlock = this.trialOrderBlock.concat(i);
         }
       }
-      return this.trialOrder.shuffle();
+      this.trialOrderBlock.shuffle();
+      console.log(this.trialOrderBlock);
+      if (this.state.blockId === 0) {
+        this.trialOrder = this.trialOrderBlock;
+      } else {
+        this.trialOrder = this.trialOrder.concat(this.trialOrderBlock);
+      }
+      return console.log(this.trialOrder);
     };
 
     Experiment.prototype.handleSpacebar = function(event) {
@@ -441,6 +451,13 @@
         removeEventListener("keydown", this.handleSpacebar);
         this.state.instructionSlide = this.state.instructionSlide + 1;
         return this.showInstructions();
+      }
+    };
+
+    Experiment.prototype.handleSpacebarBlockEnd = function(event) {
+      if (event.keyCode === 32) {
+        removeEventListener("keydown", this.handleSpacebarBlockEnd);
+        return this.trialTypes[this.trialOrder[this.state.trialIdGlobal]].run(this);
       }
     };
 
@@ -454,6 +471,7 @@
 
     Experiment.prototype.doNext = function() {
       r.clearScreen();
+      console.log(this.config.trialDist);
       switch (this.state.phase) {
         case "initialInstructions":
           this.state.instructionSlide = 0;
@@ -511,6 +529,7 @@
             return this.endExperimentMoney();
           } else if ((modulo(this.state.trialIdGlobal, this.config.blockSize)) === 0) {
             this.state.blockId = this.state.blockId + 1;
+            this.shuffleTrials();
             return this.blockFeedback();
           } else {
             return setTimeout(((function(_this) {
@@ -561,15 +580,18 @@
     Experiment.prototype.blockFeedback = function() {
       var feedbackText;
       r.clearScreen();
-      feedbackText = "Done with this block! \n Your bonus for this block was " + (ExtMath.round(this.state.blockBonus, 2)) + "!\n Your bonus for the experiment so far is " + (ExtMath.round(this.state.globalBonus, 2)) + "!\n Please take a short break.\n The experiment will continue in " + this.config.blockRestDur + " seconds.";
+      feedbackText = "Done with this block! \n Your bonus for this block was " + (ExtMath.round(this.state.blockBonus, 2)) + "/" + (this.config.correctPoints * this.config.blockSize) + " points!\n";
       r.renderText(feedbackText);
       this.state.blockBonus = 0;
-      setTimeout(((function(_this) {
+      this.updateBonusAndSave();
+      setTimeout((function() {
+        return r.renderText("Press the spacebar to continue when you are ready to continue.", "black", 0, 100);
+      }), this.config.blockRestDur * 1000);
+      return setTimeout(((function(_this) {
         return function() {
-          return _this.trialTypes[_this.trialOrder[_this.state.trialIdGlobal]].run(_this);
+          return addEventListener("keydown", _this.handleSpacebarBlockEnd);
         };
       })(this)), this.config.blockRestDur * 1000);
-      return this.updateBonusAndSave();
     };
 
     Experiment.prototype.showInstructions = function() {
@@ -599,9 +621,9 @@
           r.clearScreen();
           r.renderText("Here is the first rule:\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
           this.renderStimInstruct(this.stimuli[0], "blue", -250, -165);
-          this.renderStimInstruct(this.stimuli[1], "green", -50, -165);
+          this.renderStimInstruct(this.stimuli[1], "blue", -50, -165);
           this.renderStimInstruct(this.stimuli[0], "blue", -250, -130);
-          this.renderStimInstruct(this.stimuli[2], "green", -50, -130);
+          this.renderStimInstruct(this.stimuli[2], "blue", -50, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -617,9 +639,9 @@
           r.clearScreen();
           r.renderText("Here is the second rule:\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n\n Now you will get a chance to practice.", "black", 0, -200);
           this.renderStimInstruct(this.stimuli[3], "blue", -250, -165);
-          this.renderStimInstruct(this.stimuli[2], "green", -50, -165);
+          this.renderStimInstruct(this.stimuli[2], "blue", -50, -165);
           this.renderStimInstruct(this.stimuli[3], "blue", -250, -130);
-          this.renderStimInstruct(this.stimuli[1], "green", -50, -130);
+          this.renderStimInstruct(this.stimuli[1], "blue", -50, -130);
           setTimeout((function() {
             return r.renderText("Press the spacebar to continue.", "black", 0, 0);
           }), this.config.spacebarTimeout);
@@ -685,21 +707,21 @@
       }
       r.renderText("followed by      -->  press the '4' key\n followed by      -->  press the '4' key\n followed by      -->  press the '8' key\n followed by      -->  press the '8' key", "black", xoffset, yoffset);
       this.renderStimInstruct(e.stimuli[0], "blue", -250 + xoffset, 105 + yoffset);
-      this.renderStimInstruct(e.stimuli[2], "green", -50 + xoffset, 105 + yoffset);
+      this.renderStimInstruct(e.stimuli[2], "blue", -50 + xoffset, 105 + yoffset);
       this.renderStimInstruct(e.stimuli[0], "blue", -250 + xoffset, 35 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -50 + xoffset, 35 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "blue", -50 + xoffset, 35 + yoffset);
       this.renderStimInstruct(e.stimuli[3], "blue", -250 + xoffset, 70 + yoffset);
-      this.renderStimInstruct(e.stimuli[1], "green", -50 + xoffset, 70 + yoffset);
+      this.renderStimInstruct(e.stimuli[1], "blue", -50 + xoffset, 70 + yoffset);
       this.renderStimInstruct(e.stimuli[3], "blue", -250 + xoffset, 0 + yoffset);
-      return this.renderStimInstruct(e.stimuli[2], "green", -50 + xoffset, 0 + yoffset);
+      return this.renderStimInstruct(e.stimuli[2], "blue", -50 + xoffset, 0 + yoffset);
     };
 
     Experiment.prototype.createTrialTypes = function() {
       var i, k, l, len, len1, len2, m, n, o, p, pc, praxCounts, ref, ref1, ref2, tc, testCounts;
       this.stimuli.shuffle();
-      this.trialTypes = [new Trial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new Trial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new Trial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new Trial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
-      this.praxTrialTypes = [new PracticeTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new PracticeTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new PracticeTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new PracticeTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
-      this.testTrialTypes = [new TestTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "green"), new TestTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "green"), new TestTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "green"), new TestTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "green")];
+      this.trialTypes = [new Trial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "blue"), new Trial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "blue"), new Trial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "blue"), new Trial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "blue")];
+      this.praxTrialTypes = [new PracticeTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "blue"), new PracticeTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "blue"), new PracticeTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "blue"), new PracticeTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "blue")];
+      this.testTrialTypes = [new TestTrial("A", "X", this.renderStimTrial, this.stimuli[0], this.stimuli[1], [52, 56], 52, "blue", "blue"), new TestTrial("A", "Y", this.renderStimTrial, this.stimuli[0], this.stimuli[2], [52, 56], 56, "blue", "blue"), new TestTrial("B", "X", this.renderStimTrial, this.stimuli[3], this.stimuli[1], [52, 56], 56, "blue", "blue"), new TestTrial("B", "Y", this.renderStimTrial, this.stimuli[3], this.stimuli[2], [52, 56], 52, "blue", "blue")];
       praxCounts = (function() {
         var k, results;
         results = [];
