@@ -47,22 +47,24 @@
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
 			// trial dists
-		  	var trialDists = [[0.1, 0.4, 0.4, 0.1], [0.1, 0.4, 0.1, 0.4], [0.2, 0.3, 0.2, 0.3], [0.2, 0.3, 0.3, 0.2]];
+		  	// var trialDists = [[0.1, 0.4, 0.4, 0.1], [0.1, 0.4, 0.1, 0.4], [0.2, 0.3, 0.2, 0.3], [0.2, 0.3, 0.3, 0.2]];
+		  	var trialDists = [[0.3, 0.2, 0.4, 0.1], [0.1, 0.4, 0.3, 0.2], [0.4, 0.1, 0.4, 0.1]];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
-		      nBlocks: 2,
-		      contextDur: 1,
-		      iti: 1,
-		      retentionInterval: 1,
+		      nBlocks: 3,
+		      contextDur: 500,
+		      iti: 500,
+		      retentionInterval: 500,
 		      spacebarTimeout: 1,
-		      blockRestDur: 1,
+		      feedbackDispTime: 750,
+		      blockRestDur: 2,
 		      nPraxTrials: 2,
 		      nTestAttempts: 50,
 		      testStreakToPass: 2,
 		      minPayment: 1,
-		      maxBonus: 5,
-		      correctPoints: 10,
+		      maxBonus: 3.6,
+		      correctPoints: 15,
 		      inaccPenalty: 0,
 		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
@@ -71,23 +73,24 @@
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
-		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
+		      experimenterEmail: "lositsky.mturk@gmail.com"
 			};
 		  config = {
 		  	  condition: myCondition,
-		      blockSize: 10,
-		      nBlocks: 24,
+		      blockSize: 20,
+		      nBlocks: 12,
 		      contextDur: 500,
 		      iti: 500,
 		      retentionInterval: 2000,
 		      spacebarTimeout: 500,
+		      feedbackDispTime: 750,
 		      blockRestDur: 5,
 		      nPraxTrials: 6,
 		      nTestAttempts: 50,
-		      testStreakToPass: 5,
+		      testStreakToPass: 10,
 		      minPayment: 1,
-		      maxBonus: 5,
-		      correctPoints: 10,
+		      maxBonus: 3.6,
+		      correctPoints: 15,
 		      inaccPenalty: 0,
 		      penaltyPerSecond: 0,
 		      pointsPerDollar: 1000,
@@ -96,13 +99,13 @@
 		      fontFamily: "sans-serif",
 		      instructionFontSize: 30,
 		      taskFontSize: 100,
-		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
+		      experimenterEmail: "lositsky.mturk@gmail.com"
 			};
 			psiTurk.preloadPages(["debriefing.html"]);
-			r = new Renderer(config);
-			e = new Experiment(config);
-			// r = new Renderer(config_testing);
-			// e = new Experiment(config_testing);
+			// r = new Renderer(config);
+			// e = new Experiment(config);
+			r = new Renderer(config_testing);
+			e = new Experiment(config_testing);
 			e.run(); 
 
 		</script>

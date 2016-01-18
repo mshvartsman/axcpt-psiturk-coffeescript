@@ -27,17 +27,32 @@ class Experiment
 
 
   shuffleTrials: ->
-    trialCounts = (td * @config.nTrials for td in @config.trialDist)
+    console.log @config.trialDist
+    trialCounts = (td * @config.blockSize for td in @config.trialDist)
+    console.log @config.condition
+    console.log trialCounts
     # http://stackoverflow.com/questions/5685449/nested-array-comprehensions-in-coffeescript
-    @trialOrder = [] 
-    @trialOrder = @trialOrder.concat i for [1..tc] for tc, i in trialCounts
-    @trialOrder.shuffle()
+    @trialOrderBlock = [] 
+    @trialOrderBlock = @trialOrderBlock.concat i for [1..tc] for tc, i in trialCounts
+    @trialOrderBlock.shuffle()
+    console.log @trialOrderBlock
+    if (@state.blockId is 0)
+      @trialOrder = @trialOrderBlock
+    else
+      @trialOrder = @trialOrder.concat @trialOrderBlock
+    console.log @trialOrder  
+    
 
   handleSpacebar: (event) =>
     if event.keyCode is 32
       removeEventListener "keydown", @handleSpacebar
       @state.instructionSlide = @state.instructionSlide + 1 
       @showInstructions()
+
+  handleSpacebarBlockEnd: (event) =>
+    if event.keyCode is 32
+      removeEventListener "keydown", @handleSpacebarBlockEnd
+      @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)
 
   setState: (state) ->
     @state = state
@@ -94,6 +109,7 @@ class Experiment
           @endExperimentMoney()
         else if ((@state.trialIdGlobal %% @config.blockSize) is 0) 
           @state.blockId = @state.blockId + 1
+          @shuffleTrials() 
           @blockFeedback() 
         else 
           setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run()), @config.iti
@@ -145,11 +161,13 @@ class Experiment
   blockFeedback: ->
     r.clearScreen()
     # otherwise do feedback and next trial
-    feedbackText = "Done with this block! \n Your bonus for this block was #{ExtMath.round(@state.blockBonus, 2)}!\n Your bonus for the experiment so far is #{ExtMath.round(@state.globalBonus, 2)}!\n Please take a short break.\n The experiment will continue in #{@config.blockRestDur} seconds."
+    feedbackText = "Done with this block! \n Your bonus for this block was #{ExtMath.round(@state.blockBonus, 2)}/#{@config.correctPoints*@config.blockSize} points!\n"
     r.renderText feedbackText
     @state.blockBonus = 0
-    setTimeout (=> @trialTypes[@trialOrder[@state.trialIdGlobal]].run(this)), @config.blockRestDur*1000
     @updateBonusAndSave()
+    setTimeout (-> r.renderText "Press the spacebar to continue when you are ready to continue.", "black", 0, 100 ), @config.blockRestDur*1000
+    setTimeout (=> addEventListener "keydown", @handleSpacebarBlockEnd), @config.blockRestDur*1000
+    
 
   showInstructions: ->
     switch @state.instructionSlide
@@ -165,7 +183,7 @@ class Experiment
         r.renderText "First, you will learn the rules mapping #{@stimsName} to keys.\n
                       Then, we will test that you learned the mappings.\n
                       If you fail, the HIT will end and you will earn the minimum payment ($#{@config.minPayment}).\n
-                      If you succeed, you will compete for an additional bonus of up to $#{@config.maxBonus}.\n
+                      If you succeed, you will compete for an additional bonus (up to $#{@config.maxBonus}).\n
                       You response keys will be '4' and '8'. \n
                       You should put your left index finger on '4' and right index finger on '8' now. \n\n", "black", 0, -200
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 100 ), @config.spacebarTimeout
@@ -177,9 +195,9 @@ class Experiment
                       followed by      -->  press the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
         @renderStimInstruct @stimuli[0], "blue", -250, -165
-        @renderStimInstruct @stimuli[1], "green", -50, -165
+        @renderStimInstruct @stimuli[1], "blue", -50, -165
         @renderStimInstruct @stimuli[0], "blue", -250, -130
-        @renderStimInstruct @stimuli[2], "green", -50, -130
+        @renderStimInstruct @stimuli[2], "blue", -50, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 3
@@ -192,9 +210,9 @@ class Experiment
                       followed by      -->  press the '8' key\n\n
                       Now you will get a chance to practice.", "black", 0, -200
         @renderStimInstruct @stimuli[3], "blue", -250, -165
-        @renderStimInstruct @stimuli[2], "green", -50, -165
+        @renderStimInstruct @stimuli[2], "blue", -50, -165
         @renderStimInstruct @stimuli[3], "blue", -250, -130
-        @renderStimInstruct @stimuli[1], "green", -50, -130
+        @renderStimInstruct @stimuli[1], "blue", -50, -130
         setTimeout (-> r.renderText "Press the spacebar to continue.", "black", 0, 0 ), @config.spacebarTimeout
         setTimeout (=> addEventListener "keydown", @handleSpacebar), @config.spacebarTimeout
       when 5
@@ -220,10 +238,8 @@ class Experiment
         r.renderText "Congratulations! You have learned the rules.\n
                       You will now see up to #{@config.nTrials} more trials in blocks of #{@config.blockSize}.\n
                       You will get #{@config.correctPoints} points for a correct repsonse.\n
-                      If you do not respond in #{@config.deadline} seconds, the experiment will  \n 
-                      just continue to the next trial and you will not gain points.\n
+                      You have up to #{@config.deadline} seconds to respond on each trial.\n
                       You will receive $1 for each #{@config.pointsPerDollar} points.\n
-                      Your points can be negative but you cannot lose your $#{@config.minPayment} baseline.\n
                       The HIT will end when you have done #{@config.nTrials} trials.\n
                       \n
                       \n", "black", 0, -260
@@ -245,30 +261,30 @@ class Experiment
                   followed by      -->  press the '8' key\n
                   followed by      -->  press the '8' key", "black", xoffset, yoffset
     @renderStimInstruct e.stimuli[0], "blue", -250+xoffset, 105+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -50+xoffset, 105+yoffset
+    @renderStimInstruct e.stimuli[2], "blue", -50+xoffset, 105+yoffset
     @renderStimInstruct e.stimuli[0], "blue", -250+xoffset, 35+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -50+xoffset, 35+yoffset
+    @renderStimInstruct e.stimuli[1], "blue", -50+xoffset, 35+yoffset
     @renderStimInstruct e.stimuli[3], "blue", -250+xoffset, 70+yoffset
-    @renderStimInstruct e.stimuli[1], "green", -50+xoffset, 70+yoffset
+    @renderStimInstruct e.stimuli[1], "blue", -50+xoffset, 70+yoffset
     @renderStimInstruct e.stimuli[3], "blue", -250+xoffset, 0+yoffset
-    @renderStimInstruct e.stimuli[2], "green", -50+xoffset, 0+yoffset
+    @renderStimInstruct e.stimuli[2], "blue", -50+xoffset, 0+yoffset
 
   createTrialTypes: -> 
     @stimuli.shuffle() 
-    @trialTypes = [new Trial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
-                  new Trial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
-                  new Trial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
-                  new Trial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
+    @trialTypes = [new Trial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "blue"), 
+                  new Trial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "blue"), 
+                  new Trial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "blue"),
+                  new Trial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "blue")]
 
-    @praxTrialTypes = [new PracticeTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
-                  new PracticeTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
-                  new PracticeTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
-                  new PracticeTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
+    @praxTrialTypes = [new PracticeTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "blue"), 
+                  new PracticeTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "blue"), 
+                  new PracticeTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "blue"),
+                  new PracticeTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "blue")]
 
-    @testTrialTypes = [new TestTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "green"), 
-                  new TestTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "green"), 
-                  new TestTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "green"),
-                  new TestTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "green")]
+    @testTrialTypes = [new TestTrial("A", "X", @renderStimTrial, @stimuli[0], @stimuli[1], [52,56], 52, "blue", "blue"), 
+                  new TestTrial("A", "Y", @renderStimTrial, @stimuli[0], @stimuli[2], [52,56], 56, "blue", "blue"), 
+                  new TestTrial("B", "X", @renderStimTrial, @stimuli[3], @stimuli[1], [52,56], 56, "blue", "blue"),
+                  new TestTrial("B", "Y", @renderStimTrial, @stimuli[3], @stimuli[2], [52,56], 52, "blue", "blue")]
 
 
     praxCounts = (@config.nPraxTrials/2 for i in [1..2]) # uniform distr of AX and AY or practice, BX and BY also
