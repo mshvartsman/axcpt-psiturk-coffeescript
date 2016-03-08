@@ -59,7 +59,7 @@ class Trial
 
   run: (state) => 
     r.clearScreen() 
-    @ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD)
+    @ri = utils.sampleRetentionIntervalUniform(e.config.riMin, e.config.riMax)
     @startTime = performance.now() + @ri + e.config.contextDur
     @renderFunc @contextItem, @contextColor 
     setTimeout r.clearScreen, e.config.contextDur

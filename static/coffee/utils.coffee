@@ -75,3 +75,9 @@ utils.sampleRetentionInterval = (means, sd) ->
   ri = random.gauss(m, sd)
   ri = if ri < 0 then 0 else ri
   ri
+
+
+utils.sampleRetentionIntervalUniform = (min, max) ->
+  # sample a mean
+  ri = random.uniform(min, max)
+  ri
