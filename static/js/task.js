@@ -669,6 +669,12 @@ A fairly direct port of the Python `random` module to JavaScript
     return ri;
   };
 
+  utils.sampleRetentionIntervalUniform = function(min, max) {
+    var ri;
+    ri = random.uniform(min, max);
+    return ri;
+  };
+
   Trial = (function() {
     Trial.prototype.startTime = null;
 
@@ -785,7 +791,7 @@ A fairly direct port of the Python `random` module to JavaScript
 
     Trial.prototype.run = function(state) {
       r.clearScreen();
-      this.ri = utils.sampleRetentionInterval(e.config.riMeans, e.config.riSD);
+      this.ri = utils.sampleRetentionIntervalUniform(e.config.riMin, e.config.riMax);
       this.startTime = performance.now() + this.ri + e.config.contextDur;
       this.renderFunc(this.contextItem, this.contextColor);
       setTimeout(r.clearScreen, e.config.contextDur);
