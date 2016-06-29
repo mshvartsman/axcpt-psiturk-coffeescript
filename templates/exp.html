@@ -46,6 +46,7 @@
 			var myAdServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
 			var myMode = "{{ mode }}";
 			var psiTurk = PsiTurk(myUniqueId, myAdServerLoc);
+			var riDurs = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8], [1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 1, 1], [8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 		  	config_testing = {
 		  	  condition: myCondition,
 		      blockSize: 10,
@@ -54,6 +55,7 @@
 		      iti: 1,
 		      riMin: 0,
 		      riMax : 25,
+		      riDurs: riDurs[myCondition],
 		      spacebarTimeout: 1,
 		      blockRestDur: 1,
 		      nPraxTrials: 2,
@@ -80,6 +82,7 @@
 		      iti: 500,
 		      riMin: 0,
 		      riMax : 8000,
+		      riDurs: riDurs[myCondition],
 		      spacebarTimeout: 500,
 		      blockRestDur: 5,
 		      nPraxTrials: 6,
@@ -99,10 +102,10 @@
 		      experimenterEmail: "pni.nccl.mturk+ms44@gmail.com"
 			};
 			psiTurk.preloadPages(["debriefing.html"]);
-			r = new Renderer(config);
-			e = new Experiment(config);
-			// r = new Renderer(config_testing);
-			// e = new Experiment(config_testing);
+			// r = new Renderer(config);
+			// e = new Experiment(config);
+			r = new Renderer(config_testing);
+			e = new Experiment(config_testing);
 			e.run(); 
 
 		</script>
