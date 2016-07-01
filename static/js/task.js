@@ -794,7 +794,7 @@ A fairly direct port of the Python `random` module to JavaScript
       if (e.state.blockId === "Practice" || e.state.blockId === "Test" || e.config.riDurs[e.state.blockId] === 0) {
         this.ri = utils.sampleRetentionIntervalUniform(e.config.riMin, e.config.riMax);
       } else {
-        this.ri = e.config.riDurs[e.state.blockId];
+        this.ri = e.config.riDurs[e.state.blockId] * 1000;
       }
       this.startTime = performance.now() + this.ri + e.config.contextDur;
       this.renderFunc(this.contextItem, this.contextColor);

@@ -61,7 +61,7 @@ class Trial
     r.clearScreen() 
     if e.state.blockId is "Practice" or e.state.blockId is "Test" or e.config.riDurs[e.state.blockId] is 0
       @ri = utils.sampleRetentionIntervalUniform(e.config.riMin, e.config.riMax)
-    else @ri = e.config.riDurs[e.state.blockId]
+    else @ri = e.config.riDurs[e.state.blockId] * 1000 
     @startTime = performance.now() + @ri + e.config.contextDur
     @renderFunc @contextItem, @contextColor 
     setTimeout r.clearScreen, e.config.contextDur
